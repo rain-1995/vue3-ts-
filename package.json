@@ -1,0 +1,43 @@
+{
+  "name": "vue3tsapp_noclass",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.8.0",
+    "@typescript-eslint/parser": "^5.8.0",
+    "amfe-flexible": "^2.2.1",
+    "axios": "^0.24.0",
+    "babel-plugin-import": "^1.13.3",
+    "better-scroll": "^2.4.2",
+    "core-js": "^3.6.5",
+    "eslint": "^8.5.0",
+    "eslint-plugin-vue": "^8.2.0",
+    "path": "^0.12.7",
+    "postcss": "^8.4.5",
+    "postcss-pxtorem": "^6.0.0",
+    "qs": "^6.10.1",
+    "svg-sprite-loader": "^6.0.11",
+    "vant": "3",
+    "vue": "^3.0.0",
+    "vue-router": "^4.0.0-0",
+    "vue-template-compiler": "^2.6.14",
+    "vuex": "^4.0.0-0",
+    "xe-utils": "3"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "~4.5.0",
+    "@vue/cli-plugin-router": "~4.5.0",
+    "@vue/cli-plugin-typescript": "~4.5.0",
+    "@vue/cli-plugin-vuex": "~4.5.0",
+    "@vue/cli-service": "~4.5.0",
+    "@vue/compiler-sfc": "^3.0.0",
+    "node-sass": "^4.12.0",
+    "sass-loader": "^8.0.2",
+    "typescript": "~4.1.5"
+  }
+}
