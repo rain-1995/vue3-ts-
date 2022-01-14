@@ -30,194 +30,12 @@
         </scroll>
       </div>
       <!-- 主内容 -->
-      <div class="content">
+      <div v-if="mainContent.length > 0" class="content">
         <div class="content_d">
           <div v-for="(item, index) in mainContent" :key="index" class="mode">
-            <div class="header">
-              <div class="title">
-                <span>歌单</span>
-              </div>
-              <span class="button">更多<svg-icon icon-class="rightjiantou" class="icon" /></span>
-            </div>
-            <div v-if="item.showType == 'HOMEPAGE_SLIDE_PLAYLIST'">
-              <scroll
-                :data="bannerList"
-                :scroll-dom="`scroll_mode${index}`"
-                :scroll-x="true"
-              >
-                <div class="scroll-wrapper scroll_mode" :class="`scroll_mode${index}`">
-                  <div class="scroll-content mode_content">
-                    <div v-for="(block, index) in item.creatives" :key="index" class="item">
-                      <template v-if="block.creativeType == 'scroll_playlist'">
-                        <Swipe class="" :show-indicators="false" style="height:3rem;" autoplay="4000" vertical>
-                          <SwipeItem v-for="(swip, index) in block.resources" :key="index">
-                            <div class="swip">
-                              <span class="pic">
-                                <img :src="swip.uiElement.image.imageUrl" alt="">
-                              </span>
-                              <div class="name">
-                                {{ swip.uiElement.mainTitle.title }}
-                              </div>
-                            </div>
-                          </SwipeItem>
-                        </Swipe>
-                      </template>
-                      <template v-else>
-                        <div class="swip">
-                          <span class="pic">
-                            <img :src="block.uiElement.image.imageUrl" alt="">
-                          </span>
-                          <div class="name">
-                            {{ block.uiElement.mainTitle.title }}
-                          </div>
-                        </div>
-                      </template>
-                    </div>
-                  </div>
-                </div>
-              </scroll>
-            </div>
-            <div v-else class="swiper_mode">
-              <Swipe class="" indicator-color="white" :width="340" :loop="false">
-                <SwipeItem>
-                  <div class="swip">
-                    <div class="list_item">
-                      <span class="avatar">
-                        <img src="http://p1.music.126.net/S5Q1O1fpCFTxgpHONWJQNw==/109951166920022773.jpg" alt="">
-                      </span>
-                      <div class="info">
-                        <span class="main">teqtetqt</span>
-                        <span class="sub">teqtetqt</span>
-                      </div>
-                    </div>
-                    <div class="list_item">
-                      <span class="avatar">
-                        <img src="http://p1.music.126.net/S5Q1O1fpCFTxgpHONWJQNw==/109951166920022773.jpg" alt="">
-                      </span>
-                      <div class="info">
-                        <span class="main">teqtetqt</span>
-                        <span class="sub">teqtetqt</span>
-                      </div>
-                    </div>
-                    <div class="list_item">
-                      <span class="avatar">
-                        <img src="http://p1.music.126.net/S5Q1O1fpCFTxgpHONWJQNw==/109951166920022773.jpg" alt="">
-                      </span>
-                      <div class="info">
-                        <span class="main">teqtetqt</span>
-                        <span class="sub">teqtetqt</span>
-                      </div>
-                    </div>
-                  </div>
-                </SwipeItem>
-                <SwipeItem>
-                  <div class="swip">
-                    <div class="list_item">
-                      <span class="avatar">
-                        <img src="http://p1.music.126.net/S5Q1O1fpCFTxgpHONWJQNw==/109951166920022773.jpg" alt="">
-                      </span>
-                      <div class="info">
-                        <span class="main">teqtetqt</span>
-                        <span class="sub">teqtetqt</span>
-                      </div>
-                    </div>
-                    <div class="list_item">
-                      <span class="avatar">
-                        <img src="http://p1.music.126.net/S5Q1O1fpCFTxgpHONWJQNw==/109951166920022773.jpg" alt="">
-                      </span>
-                      <div class="info">
-                        <span class="main">teqtetqt</span>
-                        <span class="sub">teqtetqt</span>
-                      </div>
-                    </div>
-                    <div class="list_item">
-                      <span class="avatar">
-                        <img src="http://p1.music.126.net/S5Q1O1fpCFTxgpHONWJQNw==/109951166920022773.jpg" alt="">
-                      </span>
-                      <div class="info">
-                        <span class="main">teqtetqt</span>
-                        <span class="sub">teqtetqt</span>
-                      </div>
-                    </div>
-                  </div>
-                </SwipeItem>
-              </Swipe>
-            </div>
+            <scroll-model v-if="item.showType == 'HOMEPAGE_SLIDE_PLAYLIST'" :mode-data="item" />
+            <swiper-model v-else :mode-data="item" class="swiper_mode" />
           </div>
-          <!-- <div class="mode">
-            <div class="header">
-              <div class="title">
-                <span>播客|有声书</span>
-              </div>
-              <span class="button">更多<svg-icon icon-class="rightjiantou" class="icon" /></span>
-            </div>
-            <div class="swiper_mode">
-              <Swipe class="" indicator-color="white" :width="340" :loop="false">
-                <SwipeItem>
-                  <div class="swip">
-                    <div class="list_item">
-                      <span class="avatar">
-                        <img src="http://p1.music.126.net/S5Q1O1fpCFTxgpHONWJQNw==/109951166920022773.jpg" alt="">
-                      </span>
-                      <div class="info">
-                        <span class="main">teqtetqt</span>
-                        <span class="sub">teqtetqt</span>
-                      </div>
-                    </div>
-                    <div class="list_item">
-                      <span class="avatar">
-                        <img src="http://p1.music.126.net/S5Q1O1fpCFTxgpHONWJQNw==/109951166920022773.jpg" alt="">
-                      </span>
-                      <div class="info">
-                        <span class="main">teqtetqt</span>
-                        <span class="sub">teqtetqt</span>
-                      </div>
-                    </div>
-                    <div class="list_item">
-                      <span class="avatar">
-                        <img src="http://p1.music.126.net/S5Q1O1fpCFTxgpHONWJQNw==/109951166920022773.jpg" alt="">
-                      </span>
-                      <div class="info">
-                        <span class="main">teqtetqt</span>
-                        <span class="sub">teqtetqt</span>
-                      </div>
-                    </div>
-                  </div>
-                </SwipeItem>
-                <SwipeItem>
-                  <div class="swip">
-                    <div class="list_item">
-                      <span class="avatar">
-                        <img src="http://p1.music.126.net/S5Q1O1fpCFTxgpHONWJQNw==/109951166920022773.jpg" alt="">
-                      </span>
-                      <div class="info">
-                        <span class="main">teqtetqt</span>
-                        <span class="sub">teqtetqt</span>
-                      </div>
-                    </div>
-                    <div class="list_item">
-                      <span class="avatar">
-                        <img src="http://p1.music.126.net/S5Q1O1fpCFTxgpHONWJQNw==/109951166920022773.jpg" alt="">
-                      </span>
-                      <div class="info">
-                        <span class="main">teqtetqt</span>
-                        <span class="sub">teqtetqt</span>
-                      </div>
-                    </div>
-                    <div class="list_item">
-                      <span class="avatar">
-                        <img src="http://p1.music.126.net/S5Q1O1fpCFTxgpHONWJQNw==/109951166920022773.jpg" alt="">
-                      </span>
-                      <div class="info">
-                        <span class="main">teqtetqt</span>
-                        <span class="sub">teqtetqt</span>
-                      </div>
-                    </div>
-                  </div>
-                </SwipeItem>
-              </Swipe>
-            </div>
-          </div> -->
         </div>
       </div>
     </div>
@@ -226,31 +44,84 @@
 
 <script lang='ts'>
 import { defineComponent, toRefs, ref, reactive, toRef, computed, onMounted } from 'vue'
-import { Col, Swipe, SwipeItem } from 'vant'
+import { Swipe, SwipeItem } from 'vant'
 import api from '@/api'
+import scrollModel from '@/components/scrollmodel.vue'
+import swiperModel from '@/components/swiperModel.vue'
 export default defineComponent({
   name: 'HOME',
-  components: { Swipe, SwipeItem },
+  components: {
+    Swipe,
+    SwipeItem,
+    scrollModel,
+    swiperModel
+  },
   setup(props, context) {
     // 状态数据
     const state = reactive({
       loading: true,
       bannerList: [],
       iconList: [],
-      mainContent: []
+      mainContent: [],
+      pageConfig: {},
+      blockId: 1
     })
     // 方法
     const methods = {
       init() {
-        console.log(`this`, this)
         this.getBanner()
         this.getIconList()
         this.getPageData()
       },
+      // 首页模块数据
       async getPageData() {
+        // 只取对应模块的数据，其他模块暂不处理
+        const pageModes = [
+          'HOMEPAGE_SLIDE_PLAYLIST',
+          'HOMEPAGE_SLIDE_SONGLIST_ALIGN',
+          'HOMEPAGE_NEW_SONG_NEW_ALBUM',
+          // 'SHUFFLE_MUSIC_CALENDAR',
+          'SLIDE_PODCAST_VOICE_MORE_TAB'
+          // 'SLIDE_PLAYABLE_DRAGON_BALL_MORE_TAB'
+        ]
         const { data: { blocks, pageConfig }}:any = await api.pageData()
-        state.mainContent = blocks.filter((item:object|any) => (item.showType) != 'BANNER')
-        console.log(`object`, state.mainContent)
+        state.pageConfig = pageConfig
+        const result = blocks.filter((item:object|any) => pageModes.includes(item.showType))
+        state.mainContent = result.map((item:any) => {
+          if (!item.uiElement || !item.uiElement.subTitle) {
+            const formatCreatives:object[] = []
+            item.creatives.map((_k:any) => {
+              const cur = {
+                label: _k.uiElement.mainTitle.title,
+                data: [_k]
+              }
+              if (formatCreatives.length === 0) {
+                formatCreatives.push({ ...cur })
+              } else {
+                const flag = formatCreatives.some((_f:any) => {
+                  if (_f.label === _k.uiElement.mainTitle.title) {
+                    _f.data.push(_k)
+                    return true
+                  }
+                })
+                if (!flag) {
+                  formatCreatives.push({ ...cur })
+                }
+              }
+            })
+            return {
+              ...item,
+              formatCreatives,
+              hasTabs: true,
+              id: state.blockId++
+            }
+          }
+          return {
+            ...item,
+            hasTabs: false,
+            id: state.blockId++
+          }
+        })
       },
       // 轮播图
       async getBanner() {
@@ -281,7 +152,6 @@ export default defineComponent({
 
     onMounted(() => {
       methods.init()
-      // api.pageData()
     })
 
     return {
@@ -403,6 +273,24 @@ export default defineComponent({
           .title{
             font-size: 0.36rem;
             font-weight: bold;
+            .tab_title{
+              color: rgba(0,0,0,.3);
+              &::after{
+                display: inline-block;
+                content: '';
+                width: .5px;
+                height: 0.28rem;
+                background-color: rgba(0,0,0,.3);
+                margin: 0 0.16rem;
+              }
+              &:last-child::after{
+                  content: '';
+                  display: none;
+                }
+            }
+            .active{
+              color: #000;
+            }
           }
           .button{
             font-size: 0.24rem;
@@ -434,10 +322,26 @@ export default defineComponent({
                   width: 2rem;
                   height: 2rem;
                   margin-bottom: 0.16rem;
+                  position: relative;
                   img{
                     width: 100%;
                     height: 100%;
                     border-radius: 0.16rem;
+                  }
+                  .count{
+                    position: absolute;
+                    right: 0.1rem;
+                    top: 0.1rem;
+                    color: #fff;
+                    font-size: 0.2rem;
+                    background-color: rgba(0,0,0,.2);
+                    padding: 0.08rem 0.12rem;
+                    border-radius: 0.6rem;
+                    display: flex;
+                    align-items: center;
+                    .bofang{
+                      font-size: 0.16rem;
+                    }
                   }
                 }
                 .name{
@@ -446,6 +350,7 @@ export default defineComponent({
                   overflow-wrap: break-word;
                   overflow-x: hidden;
                   text-align: left;
+                  line-height: 0.32rem;
                 }
               }
             }
@@ -477,13 +382,18 @@ export default defineComponent({
                 display: flex;
                 flex-direction: column;
                 align-items: flex-start;
+                flex: 1;
+                padding-right: 0.2rem;
+                box-sizing: border-box;
                 .main{
-                  font-size: 0.32rem;
+                  font-size: 0.28rem;
                   font-weight: bold;
                   margin-bottom: 0.2rem;
+                  text-align: left;
                 }
                 .sub{
                   font-size: 0.24rem;
+                  text-align: left;
                 }
               }
             }

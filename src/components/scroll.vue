@@ -92,7 +92,6 @@ export default defineComponent({
     }
   },
   setup(props, { emit }) {
-    console.log(props)
     // 状态数据
     const state = reactive({
       scroll: null as any
@@ -174,15 +173,15 @@ export default defineComponent({
     const computes = {}
     watch(() => props.data, () => {
       nextTick(() => {
-        setTimeout(()=> {
+        setTimeout(() => {
           methods.refresh()
-        },1000)
+        }, 1000)
       })
     })
     onMounted(() => {
       // nextTick(() => {
       //   setTimeout(() => {
-          methods._initScroll()
+      methods._initScroll()
       //   }, 1000)
       // })
     })
