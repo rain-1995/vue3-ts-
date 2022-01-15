@@ -1,65 +1,74 @@
 <template>
-  <van-pull-refresh v-model="loading" @refresh="onRefresh">
-    <div class="home">
-      <Swipe class="my-swipe" indicator-color="white" autoplay="5000">
-        <SwipeItem v-for="(item, index) in bannerList" :key="index" @click="bannerDetail(item)">
-          <div class="img_item">
-            <img :src="item.pic" alt="">
-            <span class="type_title" :style="{background:item.titleColor}">{{ item.typeTitle }}</span>
-          </div>
-        </SwipeItem>
-      </Swipe>
-      <!-- 金刚区图标 -->
-      <div class="icon_scroll">
-        <scroll
-          :data="iconList"
-          scroll-dom="icon_wrapper"
-          :scroll-x="true"
-        >
-          <div class="scroll-wrapper icon_wrapper">
-            <div class="scroll-content icon_content">
-              <div v-for="(item, index) in iconList" :key="index" class="icon_item">
-                <span class="icon">
-                  <img :src="item.iconUrl" alt="">
-                  <span v-if="item.id == -1" class="date">{{ new Date().getDate() }}</span>
-                </span>
-                <span class="title">{{ item.name }}</span>
+  <div>
+    <refresh :loading="loading" />
+    <van-pull-refresh v-model="pullUp" @refresh="onRefresh">
+      <div class="home">
+        <Swipe class="my-swipe" indicator-color="white" autoplay="5000">
+          <SwipeItem v-for="(item, index) in bannerList" :key="index" @click="bannerDetail(item)">
+            <div class="img_item">
+              <img :src="item.pic" alt="">
+              <span class="type_title" :style="{background:item.titleColor}">{{ item.typeTitle }}</span>
+            </div>
+          </SwipeItem>
+        </Swipe>
+        <!-- 金刚区图标 -->
+        <div class="icon_scroll">
+          <scroll
+            :data="iconList"
+            scroll-dom="icon_wrapper"
+            :scroll-x="true"
+          >
+            <div class="scroll-wrapper icon_wrapper">
+              <div class="scroll-content icon_content">
+                <div v-for="(item, index) in iconList" :key="index" class="icon_item">
+                  <span class="icon">
+                    <img :src="item.iconUrl" alt="">
+                    <span v-if="item.id == -1" class="date">{{ new Date().getDate() }}</span>
+                  </span>
+                  <span class="title">{{ item.name }}</span>
+                </div>
               </div>
             </div>
-          </div>
-        </scroll>
-      </div>
-      <!-- 主内容 -->
-      <div v-if="mainContent.length > 0" class="content">
-        <div class="content_d">
-          <div v-for="(item, index) in mainContent" :key="index" class="mode">
-            <scroll-model v-if="item.showType == 'HOMEPAGE_SLIDE_PLAYLIST'" :mode-data="item" />
-            <swiper-model v-else :mode-data="item" class="swiper_mode" />
+          </scroll>
+        </div>
+        <!-- 主内容 -->
+        <div v-if="mainContent.length > 0" class="content">
+          <div class="content_d">
+            <div v-for="(item, index) in mainContent" :key="index" class="mode">
+              <scroll-model v-if="item.showType == 'HOMEPAGE_SLIDE_PLAYLIST'" :mode-data="item" />
+              <swiper-model v-else :mode-data="item" class="swiper_mode" />
+            </div>
           </div>
         </div>
+        <div class="bottom">
+          {{ pageConfig.nodataToast }}
+        </div>
       </div>
-    </div>
-  </van-pull-refresh>
+    </van-pull-refresh>
+  </div>
 </template>
 
 <script lang='ts'>
-import { defineComponent, toRefs, ref, reactive, toRef, computed, onMounted } from 'vue'
+import { defineComponent, toRefs, ref, reactive, toRef, computed, onMounted, nextTick } from 'vue'
 import { Swipe, SwipeItem } from 'vant'
 import api from '@/api'
 import scrollModel from '@/components/scrollmodel.vue'
 import swiperModel from '@/components/swiperModel.vue'
+import refresh from '@/components/refresh.vue'
 export default defineComponent({
   name: 'HOME',
   components: {
     Swipe,
     SwipeItem,
     scrollModel,
-    swiperModel
+    swiperModel,
+    refresh
   },
   setup(props, context) {
     // 状态数据
     const state = reactive({
       loading: true,
+      pullUp: true,
       bannerList: [],
       iconList: [],
       mainContent: [],
@@ -85,8 +94,14 @@ export default defineComponent({
           // 'SLIDE_PLAYABLE_DRAGON_BALL_MORE_TAB'
         ]
         const { data: { blocks, pageConfig }}:any = await api.pageData()
+        nextTick(() => {
+          setTimeout(() => {
+            state.loading = false
+          }, 1000)
+        })
         state.pageConfig = pageConfig
         const result = blocks.filter((item:object|any) => pageModes.includes(item.showType))
+        // 将有tab的模块单独处理，将总数组分成一个tab对应一个tab数组
         state.mainContent = result.map((item:any) => {
           if (!item.uiElement || !item.uiElement.subTitle) {
             const formatCreatives:object[] = []
@@ -142,7 +157,7 @@ export default defineComponent({
       },
       onRefresh() {
         setTimeout(() => {
-          state.loading = false
+          state.pullUp = false
         }, 1000)
       }
     }
@@ -212,7 +227,7 @@ export default defineComponent({
           margin-right: 0.4rem;
           color: rgba(0,0,0,.6);
           position: relative;
-          z-index: 999;
+          z-index: 99;
           .title{
             font-size: 0.24rem;
             font-weight: 500;
@@ -401,6 +416,12 @@ export default defineComponent({
         }
       }
     }
+  }
+  .bottom{
+    width: 100%;
+    padding: 0.4rem 0;
+    box-sizing: border-box;
+    font-size: 0.28rem;
   }
 }
 

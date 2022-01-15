@@ -59,6 +59,9 @@ export default defineComponent({
     align-items: center;
     padding: 0.3rem 0.2rem;
     box-sizing: border-box;
+    position: relative;
+    z-index: 999;
+    background: #f5f4f4;
     .more{
       margin-right: 0.4rem;
     }

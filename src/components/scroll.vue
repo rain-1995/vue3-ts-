@@ -104,7 +104,9 @@ export default defineComponent({
         state.scroll = new BScroll((document.querySelector(`.${props.scrollDom}`)) as any, {
           probeType: props.probeType,
           click: props.click,
-          scrollX: props.scrollX
+          scrollX: props.scrollX,
+          eventPassthrough: 'vertical',
+          // scrollbar: true
         })
         // 是否派发滚动事件
         if (props.listenScroll) {

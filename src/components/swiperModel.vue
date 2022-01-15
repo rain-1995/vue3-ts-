@@ -158,6 +158,13 @@ export default defineComponent({
           .sub{
             font-size: 0.24rem;
             text-align: left;
+            text-overflow: -o-ellipsis-lastline;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
           }
         }
       }

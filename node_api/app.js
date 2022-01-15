@@ -63,7 +63,7 @@ app.use(fileUpload())
 app.use(express.static(path.join(__dirname, 'public')))
 
 // cache
-app.use(cache('2 minutes', (req, res) => res.statusCode === 200))
+app.use(cache('1 minutes', (req, res) => res.statusCode === 200))
 // router
 const special = {
   'daily_signin.js': '/daily_signin',
@@ -136,7 +136,7 @@ fs.readdirSync(path.join(__dirname, 'module'))
   })
 
 const port = process.env.PORT || 3000
-const host = process.env.HOST || '192.168.0.174'
+const host = process.env.HOST || '192.168.0.104'
 
 app.server = app.listen(port, host, () => {
   console.log(`server running @ http://${host ? host : 'localhost'}:${port}`)
