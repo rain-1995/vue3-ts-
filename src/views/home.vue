@@ -3,7 +3,7 @@
     <refresh :loading="loading" />
     <van-pull-refresh v-model="pullUp" @refresh="onRefresh">
       <div class="home">
-        <Swipe class="my-swipe" indicator-color="white" autoplay="5000">
+        <Swipe class="my-swipe" :lazy-render="true" indicator-color="white" autoplay="5000">
           <SwipeItem v-for="(item, index) in bannerList" :key="index" @click="bannerDetail(item)">
             <div class="img_item">
               <img :src="item.pic" alt="">

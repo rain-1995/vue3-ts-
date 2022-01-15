@@ -18,7 +18,7 @@
       <span class="button">更多<svg-icon icon-class="rightjiantou" class="icon" /></span>
     </div>
     <div class="swiper_mode">
-      <Swipe class="" indicator-color="white" :width="340" :loop="false">
+      <Swipe ref="swiperRef" class="" :lazy-render="true" :show-indicators="false" :width="340" :loop="false">
         <SwipeItem v-for="(swip, index) in modeData.hasTabs?modeData.formatCreatives[tabIndex].data:modeData.creatives" :key="index">
           <div class="swip">
             <div v-for="(swipItem, index) in swip.resources" :key="swipItem.resourceId" class="list_item">
@@ -38,7 +38,7 @@
 </template>
 
 <script lang='ts'>
-import { defineComponent, toRefs, ref, reactive, toRef, computed, onMounted } from 'vue'
+import { defineComponent, toRefs, ref, reactive, toRef, computed, onMounted, nextTick } from 'vue'
 import { Swipe, SwipeItem } from 'vant'
 export default defineComponent({
   name: 'SWIPERMODEL',
@@ -50,9 +50,9 @@ export default defineComponent({
     }
   },
   setup(props, context) {
+    const swiperRef = ref()
     // 状态数据
     const { modeData: { formatCreatives = {}}} = props
-    console.log(`object`, formatCreatives)
     const state = reactive({
       modeData: props.modeData,
       currentTab: formatCreatives[0]?.label || '',
@@ -63,6 +63,7 @@ export default defineComponent({
     const methods = {
       handleTab(index:number) {
         state.tabIndex = index
+        swiperRef.value.swipeTo(0, { immediate: true })
       }
     }
 
@@ -74,7 +75,8 @@ export default defineComponent({
     return {
       ...toRefs(state),
       ...methods,
-      ...computes
+      ...computes,
+      swiperRef
     }
   }
 })
