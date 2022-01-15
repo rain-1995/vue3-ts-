@@ -58,11 +58,12 @@ export default defineComponent({
       animation:icon .7s linear infinite;
     }
     @keyframes icon{
-      0%{-webkit-transform:rotate(0deg);}
-      25%{-webkit-transform:rotate(90deg);}
-      50%{-webkit-transform:rotate(180deg);}
-      75%{-webkit-transform:rotate(270deg);}
-      100%{-webkit-transform:rotate(360deg);}
+      from{
+        -webkit-transform:rotate(0deg);
+      }
+      to{
+        -webkit-transform:rotate(360deg);
+      }
     }
   }
   .active{
