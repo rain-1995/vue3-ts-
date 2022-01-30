@@ -1,15 +1,15 @@
 <template>
   <!-- <div class="tabBar"> -->
-    <Tabbar class="tabbar" v-model="active" active-color="#ee0a24" inactive-color="#000" route :placeholder="false">
-      <TabbarItem v-for="(item, index) in tabBar" :key="index" replace :to="item.route">
-        {{ item.name }}
-        <template #icon="props">
-          <div :class="[props.active?'tab_active':'tab_inactive']">
-            <SvgIcon :icon-class="item.icon" />
-          </div>
-        </template>
-      </TabbarItem>
-    </Tabbar>
+  <Tabbar v-model="active" class="tabbar" active-color="#ee0a24" inactive-color="#000" route :placeholder="false">
+    <TabbarItem v-for="(item, index) in tabBar" :key="index" replace :to="item.route">
+      {{ item.name }}
+      <template #icon="props">
+        <div :class="[props.active?'tab_active':'tab_inactive']">
+          <SvgIcon :icon-class="item.icon" />
+        </div>
+      </template>
+    </TabbarItem>
+  </Tabbar>
   <!-- </div> -->
 </template>
 

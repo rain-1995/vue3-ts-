@@ -46,4 +46,13 @@ export const routes : routeModel[] = [
       title: '云村'
     }
   },
+  {
+    path: '/songPlay/:id',
+    name: 'songPlay',
+    component: () => import('@/views/songPlay.vue'),
+    meta: {
+      title: '播放',
+      fullScreen:true
+    }
+  },
 ]

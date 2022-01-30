@@ -1,6 +1,6 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHistory, createWebHashHistory, RouteRecordRaw } from 'vue-router'
 const routes:[] = []
-const files = require.context('./modules/',false,/.ts$/)
+const files = require.context('./modules/', false, /.ts$/)
 files.keys().forEach(file => {
   const fileName = (<Function>file.match)(/(?<=\.\/).+(?=.ts)/)[0]
   let route:object = files(file).default || files(file)[fileName]
@@ -9,7 +9,7 @@ files.keys().forEach(file => {
 })
 console.log(routes)
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
+  history: createWebHashHistory(process.env.BASE_URL),
   routes
 })
 

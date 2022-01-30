@@ -8,4 +8,11 @@ export default {
   pageData: (data?:object) => http('post', '/homepage/block/page', data),
   // 搜索默认词
   searchDefault: () => http('get', '/search/default'),
+  // 歌曲URL
+  songUrl: (data:object) => http('get', '/song/url', data), // params:id
+  // 歌词
+  lyric: (data:object) => http('get', '/lyric', data), // params:id
+  // 歌曲详情
+  songDetail: (data:object) => http('get', '/song/detail', data) // params:ids
+
 }

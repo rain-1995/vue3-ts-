@@ -1,6 +1,6 @@
 <template>
   <div class="header">
-    <div class="more">
+    <div class="more" @click="showMenu = true">
       <svg-icon icon-class="cebianlan" />
     </div>
     <div class="content">
@@ -12,18 +12,29 @@
         <svg-icon icon-class="huatong" />
       </div>
     </div>
+    <Popup
+      v-model:show="showMenu"
+      position="left"
+      teleport="#app"
+      style="width:50%;height:100%"
+    >
+      <div class="menu" />
+    </Popup>
   </div>
 </template>
 
 <script lang='ts'>
 import { defineComponent, toRefs, ref, reactive, toRef, computed, onMounted } from 'vue'
 import api from '@/api'
+import { Popup } from 'vant'
 export default defineComponent({
   name: 'HEADER',
+  components: { Popup },
   setup(props, context) {
     // 状态数据
     const state = reactive({
-      showKeyword: ''
+      showKeyword: '',
+      showMenu: false
     })
 
     // 方法

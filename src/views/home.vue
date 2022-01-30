@@ -20,7 +20,7 @@
           >
             <div class="scroll-wrapper icon_wrapper">
               <div class="scroll-content icon_content">
-                <div v-for="(item, index) in iconList" :key="index" class="icon_item">
+                <div v-for="(item, index) in iconList" :key="index" class="icon_item" @click="iconDetail(item)">
                   <span class="icon">
                     <img :src="item.iconUrl" alt="">
                     <span v-if="item.id == -1" class="date">{{ new Date().getDate() }}</span>
@@ -55,6 +55,7 @@ import api from '@/api'
 import scrollModel from '@/components/scrollmodel.vue'
 import swiperModel from '@/components/swiperModel.vue'
 import refresh from '@/components/refresh.vue'
+import { useRouter } from 'vue-router'
 export default defineComponent({
   name: 'HOME',
   components: {
@@ -65,6 +66,7 @@ export default defineComponent({
     refresh
   },
   setup(props, context) {
+    const router = useRouter()
     // 状态数据
     const state = reactive({
       loading: true,
@@ -81,6 +83,9 @@ export default defineComponent({
         this.getBanner()
         this.getIconList()
         this.getPageData()
+      },
+      iconDetail(icon:object) {
+        router.push('/songPlay/1885112746')
       },
       // 首页模块数据
       async getPageData() {
@@ -254,6 +259,7 @@ export default defineComponent({
               left: -1rem;
             }
             .date{
+              // width:6.8rem
               position: absolute;
               left: 50%;
               top: 55%;

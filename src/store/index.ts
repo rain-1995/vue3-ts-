@@ -1,12 +1,7 @@
 import { createStore } from 'vuex'
-
+import audioPlayer from './modules/audioPlayer'
 export default createStore({
-  state: {
-  },
-  mutations: {
-  },
-  actions: {
-  },
   modules: {
+    audioPlayer
   }
 })

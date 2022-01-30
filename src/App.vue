@@ -1,22 +1,29 @@
 <template>
   <div class="layout">
-    <Header />
-    <router-view class="view" />
-    <TabBar />
+    <template v-if="!route.meta?.fullScreen||false">
+      <Header />
+      <router-view class="view" />
+      <TabBar />
+    </template>
+    <template v-else>
+      <router-view class="view" style="height:100%;padding-bottom:0;" />
+    </template>
   </div>
 </template>
 
 <script lang='ts'>
+import { useRoute } from 'vue-router'
 import { defineComponent, toRefs, ref, reactive, toRef, computed, onMounted } from 'vue'
 import Header from '@/components/header.vue'
 import TabBar from '@/components/tabBar.vue'
 export default defineComponent({
-  name: 'Layout',
+  name: 'LAYOUT',
   components: { Header, TabBar },
   setup(props, context) {
     // 状态数据
-    const state = reactive({})
-
+    const state = reactive({
+      route: useRoute()
+    })
     // 方法
     const methods = {}
 
@@ -48,12 +55,11 @@ export default defineComponent({
     background:linear-gradient(to bottom,rgb(245, 244, 244) 0.7rem,#fff 100%);
     box-sizing: border-box;
     overflow: hidden;
-    padding-bottom: 1.2rem;
     .view{
       height: calc(100% - 1.2rem);
       overflow: auto;
-      // padding-bottom: 1.2rem;
-      // box-sizing: border-box;
+      padding-bottom: 1.2rem;
+      box-sizing: border-box;
     }
   }
 }

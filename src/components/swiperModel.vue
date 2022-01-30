@@ -18,10 +18,15 @@
       <span class="button">更多<svg-icon icon-class="rightjiantou" class="icon" /></span>
     </div>
     <div class="swiper_mode">
-      <Swipe ref="swiperRef" class="" :lazy-render="true" :show-indicators="false" :width="340" :loop="false">
+      <Swipe ref="swiperRef" class="" :lazy-render="true" :show-indicators="false" width="340" :loop="false">
         <SwipeItem v-for="(swip, index) in modeData.hasTabs?modeData.formatCreatives[tabIndex].data:modeData.creatives" :key="index">
           <div class="swip">
-            <div v-for="(swipItem, index) in swip.resources" :key="swipItem.resourceId" class="list_item">
+            <div
+              v-for="(swipItem, index) in swip.resources"
+              :key="swipItem.resourceId"
+              class="list_item"
+              @click="play(swipItem)"
+            >
               <span class="avatar">
                 <img :src="swipItem.uiElement.image.imageUrl" alt="">
               </span>
@@ -40,6 +45,7 @@
 <script lang='ts'>
 import { defineComponent, toRefs, ref, reactive, toRef, computed, onMounted, nextTick } from 'vue'
 import { Swipe, SwipeItem } from 'vant'
+import { useRouter } from 'vue-router'
 export default defineComponent({
   name: 'SWIPERMODEL',
   components: { Swipe, SwipeItem },
@@ -51,6 +57,7 @@ export default defineComponent({
   },
   setup(props, context) {
     const swiperRef = ref()
+    const router = useRouter()
     // 状态数据
     const { modeData: { formatCreatives = {}}} = props
     const state = reactive({
@@ -64,6 +71,11 @@ export default defineComponent({
       handleTab(index:number) {
         state.tabIndex = index
         swiperRef.value.swipeTo(0, { immediate: true })
+      },
+      play(song:any) {
+        if (song.resourceType === 'song') {
+          router.push(`/songPlay/${song.resourceId}`)
+        }
       }
     }
 
