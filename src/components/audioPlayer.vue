@@ -6,6 +6,7 @@
       controls
       crossorigin="*"
       :src="url"
+      :volume="storeState.volume.value"
       @loadedmetadata="loadedmetadata"
       @timeupdate="timeupdate"
     />
@@ -13,8 +14,9 @@
 </template>
 
 <script lang='ts'>
-import { defineComponent, toRefs, ref, reactive, toRef, computed, onMounted } from 'vue'
+import { defineComponent, toRefs, ref, reactive, toRef, computed, onMounted, watch, nextTick } from 'vue'
 import { useStore } from 'vuex'
+import useState from '@/utils/useState'
 export default defineComponent({
   name: 'AUDIOPLAYER',
   props: {
@@ -26,6 +28,7 @@ export default defineComponent({
   setup(props, context) {
     const store = useStore()
     const audioRef = ref<any>(null)
+    const storeState = useState('audioPlayer', ['volume', 'playing'])
     // 状态数据
     const state = reactive({})
 
@@ -42,9 +45,25 @@ export default defineComponent({
       },
       setPlayTime(time:number) {
         audioRef.value.currentTime = time
+      },
+      play() {
+        audioRef.value.play()
+      },
+      stop() {
+        audioRef.value.pause()
       }
     }
-
+    watch(() => storeState.playing.value, (n) => {
+      nextTick(() => {
+        if (n) {
+          methods.play()
+        } else {
+          methods.stop()
+        }
+      })
+    }, {
+      immediate: false
+    })
     // 计算属性
     const computes = {}
 
@@ -54,7 +73,8 @@ export default defineComponent({
       ...toRefs(state),
       ...methods,
       ...computes,
-      audioRef
+      audioRef,
+      storeState
     }
   }
 })

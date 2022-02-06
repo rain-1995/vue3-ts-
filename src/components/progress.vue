@@ -3,6 +3,7 @@
     <div
       ref="progressRef"
       class="bar"
+      :style="{width:`${barWidth/50}rem`,height:`${barHeight/50}rem`,background:barColor}"
       @click="progressClick"
       @touchstart="barTouchStart"
       @touchmove="barTouchMove"
@@ -10,11 +11,11 @@
     >
       <div
         class="track"
-        :style="{width:`${percent}%`}"
+        :style="{width:`${percentVal}%`,background:trackColor}"
       />
       <div
         class="dot"
-        :style="{left:`${percent}%`}"
+        :style="{left:`${percentVal}%`,width:`${dotSize/50}rem`,height:`${dotSize/50}rem`,background:dotColor}"
       />
     </div>
   </div>
@@ -31,7 +32,7 @@ export default defineComponent({
     },
     dotSize: { // 圆点大小
       type: [Number, String],
-      default: 20
+      default: 10
     },
     dotColor: { // 圆点颜色
       type: String,
@@ -41,9 +42,13 @@ export default defineComponent({
       type: [Number, String],
       default: 150
     },
-    barColor: { // 进度栏颜色
+    barHeight: { // 进度栏高度
       type: [Number, String],
-      default: 150
+      default: 2
+    },
+    barColor: { // 进度栏颜色
+      type: String,
+      default: 'rgba(255,255,255,.4)'
     },
     trackColor: { // 进度颜色
       type: String,
@@ -54,7 +59,8 @@ export default defineComponent({
     const progressRef = ref<any>(null)// 绑定进度条 dom
     // 状态数据
     const state = reactive({
-      percent: <number|string>0
+      percentVal: <number|string>0,
+      moving: false
     })
 
     // 方法
@@ -64,10 +70,11 @@ export default defineComponent({
         const { pageX } = e
         const clickPosition = pageX - progressRef.value.offsetLeft
         const percent = (clickPosition / progressRef.value.offsetWidth * 100).toFixed(3)
-        state.percent = this.formatPercent(percent)
+        state.percentVal = this.formatPercent(percent)
         emit('setVal', this.formatPercent(percent))
       },
       barTouchStart(e:TouchEvent) {
+        state.moving = true
         // console.log('s', e)
       },
       barTouchMove(e:TouchEvent) {
@@ -75,11 +82,15 @@ export default defineComponent({
         const { touches } = e
         const clickPosition = touches[0].pageX - progressRef.value.offsetLeft
         const percent = (clickPosition / progressRef.value.offsetWidth * 100).toFixed(3)
-        state.percent = this.formatPercent(percent)
+        state.percentVal = this.formatPercent(percent)
+        // if(state.moving == false){
         emit('setVal', this.formatPercent(percent))
+        emit('moving', this.formatPercent(percent))
+        // }
       },
       barTouchEnd(e:TouchEvent) {
         // console.log('e', e)
+        state.moving = false
       },
 
       formatPercent(num:number|string) {
@@ -87,7 +98,9 @@ export default defineComponent({
       }
     }
     watch(() => props.percent, (n) => {
-      state.percent = n
+      state.percentVal = n
+    }, {
+      immediate: true
     })
 
     onMounted(() => {})
