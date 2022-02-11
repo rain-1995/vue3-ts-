@@ -52,7 +52,16 @@ export const routes : routeModel[] = [
     component: () => import('@/views/songPlay.vue'),
     meta: {
       title: '播放',
-      fullScreen:true
+      fullScreen: true
+    }
+  },
+  {
+    path: '/songSheet/:id',
+    name: 'songSheet',
+    component: () => import('@/views/songSheet.vue'),
+    meta: {
+      title: '歌单',
+      fullScreen: true
     }
   },
 ]

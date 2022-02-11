@@ -9,7 +9,17 @@
         <span class="text">{{ showKeyword }}</span>
       </div>
       <div class="right_btn">
-        <svg-icon icon-class="huatong" />
+        <!-- <svg-icon icon-class="yinfu" class="yinfu" /> -->
+        <div v-if="storeState.songInfo.value?.id" class="song_play">
+          <div
+            class="img"
+            :class="[storeState.playing.value ? '' : 'stop']"
+            @click="playState"
+          >
+            <img :src="storeState.songInfo.value.al.picUrl" alt="">
+          </div>
+        </div>
+        <svg-icon v-else icon-class="huatong" />
       </div>
     </div>
     <Popup
@@ -27,18 +37,38 @@
 import { defineComponent, toRefs, ref, reactive, toRef, computed, onMounted } from 'vue'
 import api from '@/api'
 import { Popup } from 'vant'
+import useState from '@/utils/useState'
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 export default defineComponent({
   name: 'HEADER',
   components: { Popup },
   setup(props, context) {
+    const storeState = useState('audioPlayer', ['songInfo', 'playing'])
+    const store = useStore()
+    const router = useRouter()
     // 状态数据
     const state = reactive({
       showKeyword: '',
-      showMenu: false
+      showMenu: false,
+      clickCount: <number>0
     })
 
     // 方法
     const methods = {
+      playState() {
+        state.clickCount++
+        if (state.clickCount === 2) {
+          state.clickCount = 0
+          router.push(`/songPlay/${storeState.songInfo.value.id}`)
+        }
+        setTimeout(() => {
+          if (state.clickCount === 1) {
+            state.clickCount = 0
+            store.commit('audioPlayer/PLAYING', !storeState.playing.value)
+          }
+        }, 300)
+      },
       // 获取默认搜索词
       async searchDefaultWord() {
         const { data }:any = await api.searchDefault()
@@ -56,7 +86,8 @@ export default defineComponent({
     return {
       ...toRefs(state),
       ...methods,
-      ...computes
+      ...computes,
+      storeState
     }
   }
 })
@@ -84,9 +115,41 @@ export default defineComponent({
       overflow: hidden;
       .right_btn{
         float:right;
+        overflow: hidden;
+        .song_play{
+          .img{
+            width:0.8rem;
+            height:0.8rem;
+            position: relative;
+            background-color: #fff;
+            border-radius: 50%;
+            animation: song 3s linear infinite;
+            animation-fill-mode:forwards;
+            img{
+              position: absolute;
+              left:50%;
+              top:50%;
+              transform: translate(-50%,-50%);
+              width: 80%;
+              height:80%;
+              border-radius: 50%;
+            }
+          }
+          .stop{
+            animation-play-state:paused;
+          }
+          @keyframes song {
+            from{
+              transform: rotate(0deg);
+            }
+            to{
+              transform: rotate(360deg);
+            }
+          }
+        }
       }
       .search{
-        width:5.2rem;
+        width:5rem;
         border-radius: 0.3rem;
         padding: 0.12rem;
         text-align: left;

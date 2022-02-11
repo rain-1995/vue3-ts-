@@ -2,13 +2,16 @@
   <div>
     <audio
       ref="audioRef"
-      autoplay
+      :autoplay="true"
       controls
       crossorigin="*"
-      :src="url"
+      :src="storeState.url.value"
       :volume="storeState.volume.value"
       @loadedmetadata="loadedmetadata"
       @timeupdate="timeupdate"
+      @playing="playing"
+      @pause="pause"
+      @ended="ended"
     />
   </div>
 </template>
@@ -19,25 +22,29 @@ import { useStore } from 'vuex'
 import useState from '@/utils/useState'
 export default defineComponent({
   name: 'AUDIOPLAYER',
-  props: {
-    url: {
-      type: String,
-      default: ''
-    }
-  },
   setup(props, context) {
     const store = useStore()
     const audioRef = ref<any>(null)
-    const storeState = useState('audioPlayer', ['volume', 'playing'])
+    const storeState = useState('audioPlayer', ['volume', 'playing', 'url', 'setCurrentTime'])
     // 状态数据
-    const state = reactive({})
+    const state = reactive({
+    })
 
     // 方法
     const methods = {
+      playing() {
+        store.commit('audioPlayer/PLAYING', true)
+      },
+      pause() {
+        store.commit('audioPlayer/PLAYING', false)
+      },
+      ended() {
+        store.commit('audioPlayer/PLAYING', false)
+      },
       // 获取当前播放时间
       timeupdate(e:any) {
         const { currentTime }:any = e.target
-        store.dispatch('audioPlayer/updateCurrentTime', currentTime)
+        store.dispatch('audioPlayer/getCurrentTime', currentTime)
       },
       loadedmetadata(e:any) {
         const { target: { duration }} = e
@@ -53,16 +60,13 @@ export default defineComponent({
         audioRef.value.pause()
       }
     }
+    watch(() => storeState.setCurrentTime.value, (n) => {
+      nextTick(() => methods.setPlayTime(n))
+    })
     watch(() => storeState.playing.value, (n) => {
-      nextTick(() => {
-        if (n) {
-          methods.play()
-        } else {
-          methods.stop()
-        }
-      })
+      nextTick(() => n ? methods.play() : methods.stop())
     }, {
-      immediate: false
+      immediate: true
     })
     // 计算属性
     const computes = {}

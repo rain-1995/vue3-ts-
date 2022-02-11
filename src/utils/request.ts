@@ -19,7 +19,7 @@ http.interceptors.response.use(res => {
   }
   return Promise.resolve(data)
 }, err => {
-  Toast(`请求失败,${err.response.status}${err.response.statusText}`)
+  Toast(`请求失败,${err.response.status}${err.response.data.msg}`)
   return Promise.reject(err.response)
 })
 const request:paramsModel = (method = 'get', url = '', data = {}):object => {

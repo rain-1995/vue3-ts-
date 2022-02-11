@@ -5,19 +5,37 @@
       <span class="song_name">{{ songInfo.name }}</span>
       <span class="name">{{ songInfo.raps }}</span>
     </div>
-    <div class="volume">
-      <svg-icon icon-class="volume" class="icon" />
-      <Progress
-        :percent="volumePercent"
-        bar-width="250"
-        @setVal="setVolume"
-      />
+    <div ref="coverPage" class="cover_page" :style="{opacity:showLrc ? 0 : 1}" @click="toggleShow">
+      <!-- <div> -->
+      <div class="track" :class="[storeState.playing.value ? 'track_on' : '']">
+        <img src="../assets/icon/swith.png" alt="">
+      </div>
+      <div v-show="songInfo.al?.picUrl" class="cover" :class="[storeState.playing.value ? 'cover_on' : '']">
+        <img v-cloak :src="songInfo.al?.picUrl" alt="">
+      </div>
+      <!-- </div> -->
     </div>
-    <div class="lrc_box">
-      <div ref="lrcRef" class="lrc_content">
-        <p v-for="(item, index) in lrc" :key="index" :data-line-index="index" class="line" :class="[currentRow == index?'on':'']">
-          <span>{{ item.txt }}</span>
-        </p>
+    <div ref="lrcPage" class="lrc_page" :style="{opacity:showLrc ? 1 : 0}" @click="toggleShow">
+      <div class="volume">
+        <svg-icon icon-class="volume" class="icon" />
+        <Progress
+          :percent="volumePercent"
+          bar-width="250"
+          @setVal="setVolume"
+        />
+      </div>
+      <div class="lrc_box">
+        <div ref="lrcRef" class="lrc_content">
+          <p
+            v-for="(item, index) in lrc"
+            :key="index"
+            :data-line-index="index"
+            class="line"
+            :class="[currentRow == index?'on':'']"
+          >
+            <span>{{ item.txt }}</span>
+          </p>
+        </div>
       </div>
     </div>
     <div class="controls">
@@ -47,49 +65,45 @@
           <svg-icon icon-class="list" />
         </span>
       </div>
-      <!-- <audio ref="audioRef" autoplay controls crossorigin="*" :src="url" @loadedmetadata="initedSong" @timeupdate="timeupdate" /> -->
-      <audioPlayer ref="audioComp" :url="url" style="display:none;" />
     </div>
   </div>
 </template>
 
 <script lang='ts'>
 import { useRoute } from 'vue-router'
-import { defineComponent, toRefs, ref, reactive, toRef, computed, onMounted, getCurrentInstance, nextTick, onUnmounted, watch } from 'vue'
+import { defineComponent, toRefs, ref, reactive, onMounted, nextTick, onUnmounted, watch } from 'vue'
 import api from '@/api'
 import timeUtil from '@/utils/timeUtil'
 import Progress from '@/components/progress.vue'
 import useState from '@/utils/useState'
-import audioPlayer from '@/components/audioPlayer.vue'
 import { useStore } from 'vuex'
+import { keysObject } from '@/utils/types'
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const _ = require('lodash')
 export default defineComponent({
   name: 'SONGPLAY',
   components: {
-    Progress,
-    audioPlayer
+    Progress
   },
-  setup(props, context) {
+  setup() {
     const route = useRoute()
     const store = useStore()
-    const lrcRef = ref()
-    const audioComp = ref()
-    const centerHeight = ref<number>(0)
-    const storeState = useState('audioPlayer', ['currentTime', 'duration', 'volume','playing'])
+    const lrcRef = ref() // 歌词容器ref
+    const coverPage = ref() // 唱片页ref
+    const lrcPage = ref() // 歌词页ref
+    const centerHeight = ref<number>(0) // 页面中心高度
+    const scrollHeight = 50 // 歌词每次滚动距离
+    const storeState = useState('audioPlayer', ['currentTime', 'duration', 'volume', 'playing'])
     // 状态数据
     const state = reactive({
-      lrc: [] as object[],
+      lrc: [] as object[], // 歌词
       songInfo: {},
-      currentRow: 0,
-      url: '',
-      percent: <number|string>0,
-      recordIndex: 0,
-      flag: true,
-      height: 0,
+      currentRow: 0, // 当前播放位置
+      percent: <number|string>0, // 歌曲进度条
       moving: false,
-      volumePercent: <number>storeState.volume.value * 100
+      volumePercent: <number>storeState.volume.value * 100, // 音量进度条
+      showLrc: false
     })
-    console.log('first', state.volumePercent)
     watch(() => storeState.currentTime.value, (n) => {
       methods.lrcScroll(n)
     })
@@ -101,126 +115,92 @@ export default defineComponent({
         this.getMusicUrl()
         this.detail()
       },
+      // 唱片歌词切换
+      toggleShow() {
+        state.showLrc = !state.showLrc
+        const display = {
+          'true': 'block',
+          'false': 'none'
+        }
+        setTimeout(() => {
+          coverPage.value.style.display = display[<keyof typeof display>`${!state.showLrc}`]
+          lrcPage.value.style.display = display[<keyof typeof display>`${state.showLrc}`]
+        }, 400)
+      },
+      // 播放暂停
       playState(val:boolean) {
         store.commit('audioPlayer/PLAYING', val)
       },
       // 歌曲详情
       async detail():Promise<void> {
-        const { songs }:any = await api.songDetail({ ids: route.params.id })
+        const { songs }:keysObject = await api.songDetail({ ids: route.params.id })
         state.songInfo = {
           ...songs[0],
-          raps: songs[0].ar.map((item:any) => item.name).join('/')
+          raps: songs[0].ar.map((item:keysObject) => item.name).join('/')
         }
+        store.dispatch('audioPlayer/songInfo', state.songInfo)
       },
       // 获取歌词
       async getLyric():Promise<void> {
-        const { lrc }:any = await api.lyric({ id: route.params.id })
+        const { lrc }:keysObject = await api.lyric({ id: route.params.id })
         state.lrc = this.formatLrc(lrc.lyric)
       },
       // 获取歌曲地址
       async getMusicUrl():Promise<void> {
-        const { data }:any = await api.songUrl({ id: route.params.id })
-        state.url = data[0].url
+        const { data }:keysObject = await api.songUrl({ id: route.params.id })
+        store.commit('audioPlayer/SET_URL', data[0].url)
         await nextTick()
-        store.commit('audioPlayer/PLAYING', true)
+        // store.commit('audioPlayer/PLAYING', true)
       },
       // 歌词处理，时间与文本分别保存
       formatLrc(lrc:string):object[] {
         const splitLrc = lrc.split('\n')
-        let formatLyric = splitLrc
-          .filter((item:string) => item && item.split(']')[1] !== '')
+        const formatLyric = splitLrc
           .map((item:string) => {
-            const time:string = /\[([^\[\]]*)\]/.exec(item)![1]
-            const txt = item.split(']')[1]
-            return {
-              time: timeUtil.timeToSec(time),
-              txt
-            }
+            const splitItem = item.split(']')
+            const txt = splitItem.pop()
+            return splitItem.map(s => {
+              return {
+                time: timeUtil.timeToSec(s.replace('[', '')),
+                txt
+              }
+            })
           })
-        formatLyric = formatLyric.sort((a:any, b:any) => a.time - b.time)
+          .flat()
+          .filter((item:keysObject) => item.txt !== '')
+          .sort((a:keysObject, b:keysObject) => a.time - b.time)
         console.log('first', formatLyric)
         return formatLyric
       },
       // 歌词随时间同步滚动，设置进度条
       lrcScroll: _.throttle(function(time:number):void {
-        console.log('time', time)
-        // if (state.moving) {
         state.percent = (time / storeState.duration.value * 100).toFixed(3)
-        // }
-        // const item:any = state.lrc[state.recordIndex]
-        // const active:any = document.querySelectorAll('.line')[state.recordIndex]
-        // if (time >= item.time &&state.flag) {
-        //   const { lineIndex } = active.dataset
-        //   if (state.recordIndex === Number(lineIndex)) {
-        //     state.currentRow = state.recordIndex
-        //     console.log('state.flag', state.flag)
-        //     state.recordIndex += 1
-        //     if (state.recordIndex >= state.lrc.length) {
-        //       state.flag = false
-        //       return
-        //     }
-        //     state.height=centerHeight.value-active.offsetHeight*state.recordIndex
-        //     nextTick(() => {
-        //       lrcRef.value.style.transform = `translateY(${(state.height)}px)`
-        //     })
-        //   }
-        // }
+        const lineDoms:keysObject = document.querySelectorAll('.line')
         for (let index = 0; index < state.lrc.length; index++) {
-          const item:any = state.lrc[index]
-          if (time >= item.time && state.flag) {
-            const active:any = document.querySelectorAll('.line')[index]
-            const { lineIndex } = active.dataset
+          const item:keysObject = state.lrc[index]
+          if (time >= item.time) {
+            const { lineIndex } = lineDoms[index].dataset
             if (index === Number(lineIndex)) {
-              // console.log('index', index);
-              state.recordIndex += 1
-              if (lineIndex == state.lrc.length - 1 && time > item.time) {
-                // state.currentRow = state.lrc.length-1
-                // state.flag = false
-                // console.log('hhh');
-                // return
-              }
               nextTick(() => {
-                // console.log('aaa');
                 state.currentRow = index
-                const a = centerHeight.value - active.offsetHeight * (index + 0)
-                lrcRef.value.style.transform = `translateY(${a}px)`
+                lrcRef.value.style.transform = `translateY(${(centerHeight.value - scrollHeight * (index + 1)) / 50}rem)`
               })
             }
           }
         }
-        // state.lrc.forEach((item:any, index:number) => {
-        //   if (time >= item.time && state.flag) {
-        //     const active:any = document.querySelectorAll('.line')[index]
-        //     const { lineIndex } = active.dataset
-        //     if (index === Number(lineIndex)) {
-        //       // console.log('index', index);
-        //       state.recordIndex += 1
-        //       if (lineIndex == state.lrc.length-1&&time>item.time) {
-        //         state.currentRow = state.lrc.length-1
-        //         // state.flag = false
-        //         console.log('hhh');
-        //         return
-        //       }
-        //       nextTick(() => {
-        //         console.log('aaa');
-        //         state.currentRow = index
-        //         lrcRef.value.style.transform = `translateY(${(centerHeight.value - active.offsetHeight * (index + 1))}px)`
-        //       })
-        //     }
-        //   }
-        // })
       }, 500),
       // 拖拽，点击进度条同步设置播放时间
       setTime(val:number) :void {
         const currentTime = (val * storeState.duration.value) / 100
-        audioComp.value.setPlayTime(currentTime)
+        store.dispatch('audioPlayer/setCurrentTime', currentTime)
       },
+      // 设置音量
       setVolume(val:number):void {
         const volume = val / 100
         store.commit('audioPlayer/SET_VOLUME', volume)
       },
       // 当前页面禁止滑动
-      disabledScroll(e:any):void {
+      disabledScroll(e:keysObject):void {
         e.preventDefault()
         e.stopPropagation()
       },
@@ -248,8 +228,9 @@ export default defineComponent({
       ...toRefs(state),
       ...methods,
       lrcRef,
-      audioComp,
-      storeState
+      storeState,
+      coverPage,
+      lrcPage
     }
   }
 })
@@ -259,20 +240,30 @@ export default defineComponent({
   .play_page{
     width:100%;
     height: 100%;
-    // display: flex;
-    // flex-direction: column;
-    // background-color: rgba(42, 34, 34,.8);
-    // background-size: 100% 100%;
     position: relative;
     z-index: 0;
-
     .bg_url{
       position: fixed;
       width: 100%;
       height: 100%;
-      filter: blur(50px) brightness(50%);
       z-index: -1;
       background-color: rgba(0,0,0,.2);
+      background-size: cover;
+      background-position: center;
+      &::after{
+        display: block;
+        content: "";
+        width: 150%;
+        height: 150%;
+        position: absolute;
+        left: 0;
+        top: 0;
+        right:0;
+        bottom:0;
+        transform: translate(-1rem,-1rem);
+        background: inherit;
+        filter: blur(20px) brightness(30%);
+      }
     }
     .song_info{
       width: 100%;
@@ -295,6 +286,70 @@ export default defineComponent({
         text-overflow: ellipsis;
         width: 3rem;
       }
+    }
+    .cover_page{
+      position: relative;
+      width:100%;
+      height:8.6rem;
+      opacity: 0;
+      transition: all .5s;
+      display: block;
+      .track{
+        width:1.6rem;
+        height:auto;
+        position: absolute;
+        left:48%;
+        top:0;
+        z-index: 2;
+        transition: all .7s;
+        transform: rotate(-30deg);
+        transform-origin: 0 0;
+
+        img{
+          width:100%;
+          height:100%;
+        }
+      }
+      .track_on{
+        transform: rotate(0deg);
+      }
+      .cover_on{
+        animation-play-state:running !important;
+      }
+      @keyframes rotate {
+        from{
+          transform:translate(-50%,0) rotate(0deg);
+        }
+        to{
+          transform:translate(-50%,0) rotate(360deg);
+        }
+      }
+      .cover{
+        width:5rem;
+        height:5rem;
+        background: url('../assets/icon/coverall.png') 0 0 no-repeat;
+        background-size: 100% 100%;
+        position: absolute;
+        left:50%;
+        transform: translate(-50%,0);
+        margin-top: 1.2rem;
+        animation: rotate 8s linear infinite;
+        animation-play-state:paused;
+        img{
+          width:62%;
+          height: 62%;
+          border-radius: 50%;
+          position: absolute;
+          top:50%;
+          left:50%;
+          transform: translate(-50%,-50%);
+        }
+      }
+    }
+    .lrc_page{
+      opacity: 0;
+      transition: all .5s;
+      display: none;
     }
     .volume{
       display: flex;
@@ -335,7 +390,7 @@ export default defineComponent({
         }
         .on{
           color: rgba($color: #fff, $alpha: .9);
-          font-size: 0.32rem;
+          font-size: 0.36rem;
         }
       }
     }
@@ -368,8 +423,8 @@ export default defineComponent({
           justify-content: space-between;
           font-size: 0.32rem;
           .play{
-            font-size: 0.7rem;
-            padding: 0 0.7rem;
+            font-size: 0.76rem;
+            margin: 0 0.7rem;
             box-sizing: border-box;
           }
 

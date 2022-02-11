@@ -8,6 +8,7 @@
     <template v-else>
       <router-view class="view" style="height:100%;padding-bottom:0;" />
     </template>
+    <AudioPlayer style="display:none;" />
   </div>
 </template>
 

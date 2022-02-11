@@ -4,10 +4,10 @@
       ref="progressRef"
       class="bar"
       :style="{width:`${barWidth/50}rem`,height:`${barHeight/50}rem`,background:barColor}"
-      @click="progressClick"
-      @touchstart="barTouchStart"
-      @touchmove="barTouchMove"
-      @touchend="barTouchEnd"
+      @click.stop="progressClick"
+      @touchstart.stop="barTouchStart"
+      @touchmove.stop="barTouchMove"
+      @touchend.stop="barTouchEnd"
     >
       <div
         class="track"

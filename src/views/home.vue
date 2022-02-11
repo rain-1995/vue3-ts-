@@ -85,7 +85,7 @@ export default defineComponent({
         this.getPageData()
       },
       iconDetail(icon:object) {
-        router.push('/songPlay/1885112746')
+        // router.push('/songPlay/1885112746')
       },
       // 首页模块数据
       async getPageData() {
