@@ -31,18 +31,28 @@
             </div>
           </scroll>
         </div>
-        <!-- 主内容 -->
-        <div v-if="mainContent.length > 0" class="content">
-          <div class="content_d">
-            <div v-for="(item, index) in mainContent" :key="index" class="mode">
-              <scroll-model v-if="item.showType == 'HOMEPAGE_SLIDE_PLAYLIST'" :mode-data="item" />
-              <swiper-model v-else :mode-data="item" class="swiper_mode" />
+        <List
+          v-model:loading="loadingList"
+          :finished="finished"
+          finished-text="没有更多了"
+          @load="onLoad"
+        >
+          <!-- 主内容 -->
+          <div v-if="mainContent.length > 0" class="content">
+            <div class="content_d">
+              <div v-for="(item, index) in mainContent" :key="index" class="mode">
+                <scroll-model v-if="item.showType == 'HOMEPAGE_SLIDE_PLAYLIST'" :mode-data="item" @handleClick="toList" />
+                <swiper-model v-else :mode-data="item" class="swiper_mode" />
+              </div>
             </div>
           </div>
-        </div>
+        </List>
         <div class="bottom">
-          {{ pageConfig.nodataToast }}
+          <!-- {{ pageConfig.nodataToast }} -->
+          <div>copyright by rain.weiyu</div>
+          <div>仅供学习交流使用</div>
         </div>
+        <!-- </list> -->
       </div>
     </van-pull-refresh>
   </div>
@@ -50,12 +60,13 @@
 
 <script lang='ts'>
 import { defineComponent, toRefs, ref, reactive, toRef, computed, onMounted, nextTick } from 'vue'
-import { Swipe, SwipeItem } from 'vant'
+import { Swipe, SwipeItem, List } from 'vant'
 import api from '@/api'
 import scrollModel from '@/components/scrollmodel.vue'
 import swiperModel from '@/components/swiperModel.vue'
 import refresh from '@/components/refresh.vue'
 import { useRouter } from 'vue-router'
+import { keysObject } from '@/utils/types'
 export default defineComponent({
   name: 'HOME',
   components: {
@@ -63,7 +74,8 @@ export default defineComponent({
     SwipeItem,
     scrollModel,
     swiperModel,
-    refresh
+    refresh,
+    List
   },
   setup(props, context) {
     const router = useRouter()
@@ -73,41 +85,58 @@ export default defineComponent({
       pullUp: true,
       bannerList: [],
       iconList: [],
-      mainContent: [],
+      mainContent: <object[]>[],
       pageConfig: {},
-      blockId: 1
+      blockId: 1,
+      finished: false,
+      cursor: '',
+      loadingList: false
     })
     // 方法
     const methods = {
       init() {
         this.getBanner()
         this.getIconList()
-        this.getPageData()
+        // this.getPageData()
+      },
+      // 跳歌单
+      toList({ resourceId }:keysObject) {
+        router.push(`/songSheet/${resourceId}`)
       },
       iconDetail(icon:object) {
         // router.push('/songPlay/1885112746')
       },
       // 首页模块数据
       async getPageData() {
-        // 只取对应模块的数据，其他模块暂不处理
-        const pageModes = [
-          'HOMEPAGE_SLIDE_PLAYLIST',
-          'HOMEPAGE_SLIDE_SONGLIST_ALIGN',
-          'HOMEPAGE_NEW_SONG_NEW_ALBUM',
-          // 'SHUFFLE_MUSIC_CALENDAR',
-          'SLIDE_PODCAST_VOICE_MORE_TAB'
-          // 'SLIDE_PLAYABLE_DRAGON_BALL_MORE_TAB'
-        ]
-        const { data: { blocks, pageConfig }}:any = await api.pageData()
+        const { data }:any = await api.pageData({ cursor: state.cursor })
+        const { blocks, pageConfig } = data
+        state.finished = !data.hasMore
+        state.cursor = data.cursor
         nextTick(() => {
           setTimeout(() => {
+            state.pullUp = false
             state.loading = false
           }, 1000)
         })
+        state.loadingList = false
+        state.mainContent = [...state.mainContent, ...this.formatPage(blocks)]
         state.pageConfig = pageConfig
-        const result = blocks.filter((item:object|any) => pageModes.includes(item.showType))
+      },
+      // 首页数据处理
+      formatPage(blocks:object[]):object[] {
+        // 只取对应模块的数据，其他模块暂不处理
+        const pageModes = [
+          'HOMEPAGE_BLOCK_PLAYLIST_RCMD',
+          'HOMEPAGE_BLOCK_STYLE_RCMD',
+          'HOMEPAGE_BLOCK_NEW_ALBUM_NEW_SONG',
+          'HOMEPAGE_BLOCK_MGC_PLAYLIST',
+          'HOMEPAGE_BLOCK_OFFICIAL_PLAYLIST',
+          'HOMEPAGE_BLOCK_TOPLIST'
+          // 'HOMEPAGE_VOICELIST_RCMD'
+        ]
+        const result = blocks.filter((item:object|any) => pageModes.includes(item.blockCode))
         // 将有tab的模块单独处理，将总数组分成一个tab对应一个tab数组
-        state.mainContent = result.map((item:any) => {
+        return result.map((item:any) => {
           if (!item.uiElement || !item.uiElement.subTitle) {
             const formatCreatives:object[] = []
             item.creatives.map((_k:any) => {
@@ -146,6 +175,7 @@ export default defineComponent({
       // 轮播图
       async getBanner() {
         const { banners }:any = await api.swiperList({ type: 1 })
+        // const res:any = await api.hotTopic()
         state.bannerList = banners
       },
       // 轮播图跳转
@@ -161,9 +191,16 @@ export default defineComponent({
         state.iconList = data
       },
       onRefresh() {
-        setTimeout(() => {
-          state.pullUp = false
-        }, 1000)
+        state.mainContent = []
+        state.finished = false
+        this.getPageData()
+      },
+      onLoad() {
+        nextTick(() => {
+          if (!state.finished) {
+            methods.getPageData()
+          }
+        })
       }
     }
 
@@ -325,107 +362,12 @@ export default defineComponent({
             }
           }
         }
-        .scroll_mode{
-          .mode_content{
-            display: inline-flex;
-            box-sizing: border-box;
-            padding-left: 0.36rem;
-            .item{
-              margin-right: 0.2rem;
-              flex: 1;
-              .swip{
-                display: flex;
-                flex-direction: column;
-                flex: 1;
-                // flex-wrap: wrap;
-                white-space: normal;
-                .pic{
-                  width: 2rem;
-                  height: 2rem;
-                  margin-bottom: 0.16rem;
-                  position: relative;
-                  img{
-                    width: 100%;
-                    height: 100%;
-                    border-radius: 0.16rem;
-                  }
-                  .count{
-                    position: absolute;
-                    right: 0.1rem;
-                    top: 0.1rem;
-                    color: #fff;
-                    font-size: 0.2rem;
-                    background-color: rgba(0,0,0,.2);
-                    padding: 0.08rem 0.12rem;
-                    border-radius: 0.6rem;
-                    display: flex;
-                    align-items: center;
-                    .bofang{
-                      font-size: 0.16rem;
-                    }
-                  }
-                }
-                .name{
-                  font-size: 0.24rem;
-                  word-break: break-all;
-                  overflow-wrap: break-word;
-                  overflow-x: hidden;
-                  text-align: left;
-                  line-height: 0.32rem;
-                }
-              }
-            }
-          }
-        }
-        .swiper_mode{
-          width: 100%;
-          .swip{
-            padding-left: 0.36rem;
-            .list_item{
-              display: flex;
-              align-items: flex-end;
-              padding:0.16rem 0;
-              border-bottom: .5px solid rgba(0,0,0,.2);
-              &:last-child{
-                border-bottom: none;
-              }
-              .avatar{
-                width: 0.9rem;
-                height: 0.9rem;
-                margin-right: 0.2rem;
-                img{
-                  width: 100%;
-                  height: 100%;
-                  border-radius: 0.16rem;
-                }
-              }
-              .info{
-                display: flex;
-                flex-direction: column;
-                align-items: flex-start;
-                flex: 1;
-                padding-right: 0.2rem;
-                box-sizing: border-box;
-                .main{
-                  font-size: 0.28rem;
-                  font-weight: bold;
-                  margin-bottom: 0.2rem;
-                  text-align: left;
-                }
-                .sub{
-                  font-size: 0.24rem;
-                  text-align: left;
-                }
-              }
-            }
-          }
-        }
       }
     }
   }
   .bottom{
     width: 100%;
-    padding: 0.4rem 0;
+    padding: 0 0 0.2rem;
     box-sizing: border-box;
     font-size: 0.28rem;
   }

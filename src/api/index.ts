@@ -17,8 +17,14 @@ export default {
   // 歌曲详情
   songDetail: (data:object) => http('get', '/song/detail', data), // params:ids
   // 歌单详情
-  playlistDetail: (data:object) => http('get', '/playlist/detail', data), // params:id
+  playlistDetail: (data:object) => http('post', '/playlist/detail', data), // params:id
   // 歌单歌曲
-  playlistSongs: (data:object) => http('get', '/playlist/track/all', data), // params:id,limit,offset
+  playlistSongs: (data:object) => http('post', '/playlist/track/all', data), // params:id,limit,offset
+  // 发送验证码
+  sendCode: (data:object) => http('post', '/captcha/sent', data), // params:phone
+  // 登录
+  login: (data:object) => http('post', '/login/cellphone', data), // params:phone,captcha,password
+  // 验证验证码
+  verify: (data:object) => http('post', '/captcha/verify', data), // params:phone,captcha
 
 }

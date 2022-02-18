@@ -7,7 +7,6 @@ files.keys().forEach(file => {
   route = Array.isArray(route) ? [...route] : [route]
   routes.push(...route as [])
 })
-console.log(routes)
 const router = createRouter({
   history: createWebHashHistory(process.env.BASE_URL),
   routes

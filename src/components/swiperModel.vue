@@ -19,8 +19,12 @@
     </div>
     <div class="swiper_mode">
       <Swipe ref="swiperRef" class="" :lazy-render="true" :show-indicators="false" width="340" :loop="false">
-        <SwipeItem v-for="(swip, index) in modeData.hasTabs?modeData.formatCreatives[tabIndex].data:modeData.creatives" :key="index">
-          <div class="swip">
+        <SwipeItem v-for="(swip, index) in modeData.hasTabs?modeData.formatCreatives[tabIndex].data:modeData.creatives" :key="index" class="s_item">
+          <div class="swip" :class="[modeData.blockCode == 'HOMEPAGE_BLOCK_TOPLIST'?'border':'']">
+            <div v-if="modeData.blockCode == 'HOMEPAGE_BLOCK_TOPLIST'" class="toplist">
+              <span class="name">{{ swip.uiElement?.mainTitle?.title }}</span>
+              <svg-icon icon-class="rightjiantou" class="icon" />
+            </div>
             <div
               v-for="(swipItem, index) in swip.resources"
               :key="swipItem.resourceId"
@@ -137,7 +141,21 @@ export default defineComponent({
   .swiper_mode{
     width: 100%;
     .swip{
-      padding-left: 0.36rem;
+      margin-left: 0.36rem;
+      .toplist{
+        display: flex;
+        align-items: center;
+        font-size: 0.32rem;
+        font-weight: bold;
+        justify-content: center;
+        padding: 0.2rem 0 0.3rem;
+        box-sizing: border-box;
+        .icon{
+          font-size: 0.24rem;
+          color:rgba(0,0,0,.5);
+          margin-left: 0.12rem;
+        }
+      }
       .list_item{
         display: flex;
         align-items: flex-end;
@@ -182,6 +200,21 @@ export default defineComponent({
           }
         }
       }
+    }
+    .border{
+      // width:90%;
+      box-shadow: 0 0.04rem 0.24rem 0 rgba(0, 0, 0, 0.1);
+      margin: 0.2rem 0 0.2rem 0.36rem;
+      border-radius: 0.3rem;
+      padding: 0.2rem;
+      box-sizing: border-box;
+      .list_item{
+        border: none;
+      }
+    }
+    .s_item:last-child .border{
+      margin-right: 0.3rem;
+
     }
   }
 </style>

@@ -4,7 +4,7 @@ import { paramsModel } from './types'
 import { Toast } from 'vant'
 const http = axios.create({
   baseURL: process.env.VUE_APP_BASE_URL,
-  timeout: 30000
+  timeout: 30000,
 })
 http.interceptors.request.use(config => {
   return config
@@ -14,12 +14,13 @@ http.interceptors.request.use(config => {
 http.interceptors.response.use(res => {
   const { data } = res
   if (data.code !== 200) {
-    Toast(data.msg)
+    Toast(data.msg || data.message)
     return Promise.reject(data)
   }
   return Promise.resolve(data)
 }, err => {
-  Toast(`请求失败,${err.response.status}${err.response.data.msg}`)
+  const { data } = err.response
+  Toast(data.msg || data.message)
   return Promise.reject(err.response)
 })
 const request:paramsModel = (method = 'get', url = '', data = {}):object => {
@@ -27,7 +28,9 @@ const request:paramsModel = (method = 'get', url = '', data = {}):object => {
     'post': { data: qs.stringify(data) },
     'get': { params: data }
   }
+  url = method === 'post' ? `${url}?timestamp=${new Date().getTime()}` : url
   return http({
+    withCredentials: true,
     method,
     url,
     ...dataMap[<keyof typeof dataMap>method]

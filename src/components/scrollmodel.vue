@@ -22,7 +22,7 @@
             <template v-if="block.creativeType == 'scroll_playlist'">
               <Swipe class="" :show-indicators="false" style="height:3rem;" autoplay="4000" vertical>
                 <SwipeItem v-for="(swip, index) in block.resources" :key="index">
-                  <div class="swip">
+                  <div class="swip" @click="handleClick(swip)">
                     <span class="pic">
                       <img :src="swip.uiElement.image.imageUrl" alt="">
                     </span>
@@ -34,7 +34,7 @@
               </Swipe>
             </template>
             <template v-else>
-              <div v-for="(item, index) in block.resources" :key="index" class="swip">
+              <div v-for="(item, index) in block.resources" :key="index" class="swip" @click="handleClick(item)">
                 <span class="pic">
                   <img :src="item.uiElement.image.imageUrl" alt="">
                   <span class="count">
@@ -57,6 +57,8 @@
 <script lang='ts'>
 import { defineComponent, toRefs, ref, reactive, toRef, computed, onMounted } from 'vue'
 import { Swipe, SwipeItem } from 'vant'
+import { keysObject } from '@/utils/types'
+import util from '@/utils'
 export default defineComponent({
   name: 'SCROLLMODEL',
   components: { Swipe, SwipeItem },
@@ -67,7 +69,7 @@ export default defineComponent({
 
     }
   },
-  setup(props, context) {
+  setup(props, { emit }) {
     // 状态数据
     const state = reactive({
       data: props.modeData
@@ -76,12 +78,12 @@ export default defineComponent({
     // 方法
     const methods = {
       formatCount(num:number) {
-        return num < 10000
-          ? num
-          : num < 100000000
-            ? `${(num / 10000).toFixed(0)}万`
-            : `${(num / 100000000).toFixed(0)}亿`
+        return util.formatCount(num)
       },
+      // 点击操作，交给父组件处理
+      handleClick(data:keysObject) {
+        emit('handleClick', data)
+      }
     }
 
     // 计算属性

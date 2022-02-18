@@ -23,6 +23,7 @@ module.exports = {
     '@typescript-eslint'
   ],
   rules: {
+    '@typescript-eslint/no-non-null-assertion': 'off',
     'vue/max-attributes-per-line': [2, {
       'singleline': 10,
       'multiline': {

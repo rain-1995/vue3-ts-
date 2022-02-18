@@ -64,4 +64,13 @@ export const routes : routeModel[] = [
       fullScreen: true
     }
   },
+  {
+    path: '/login',
+    name: 'login',
+    component: () => import('@/views/login.vue'),
+    meta: {
+      title: '登录',
+      fullScreen: true
+    }
+  },
 ]

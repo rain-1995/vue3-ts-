@@ -1388,10 +1388,10 @@
   dependencies:
     "@popperjs/core" "^2.9.2"
 
-"@vant/use@^1.3.4":
-  version "1.3.4"
-  resolved "https://registry.yarnpkg.com/@vant/use/-/use-1.3.4.tgz#f99482d63682973a2775aa5c1a9cf906862a4f71"
-  integrity sha512-XvZkPCjcmEBhD+T3vB68thOG6P9jazld6aBTMenhbAQd4FT/x9AiKIWPJx4MvhYoSIWt7fju6K01XTJldWs1hw==
+"@vant/use@^1.3.5":
+  version "1.3.5"
+  resolved "https://registry.yarnpkg.com/@vant/use/-/use-1.3.5.tgz#fd2817850e76e3098e29d4c8d864e19207c03ab1"
+  integrity sha512-S4rfMQT+71quUbSY9sF7vJTEADVWqHxn8zUbpEl4vzI2CCJx67ri/ZHV911LpXIaZVgSSGPLE5xLV8javmbU0Q==
 
 "@vue/babel-helper-vue-jsx-merge-props@^1.2.1":
   version "1.2.1"
@@ -9453,14 +9453,14 @@ validate-npm-package-license@^3.0.1:
     spdx-correct "^3.0.0"
     spdx-expression-parse "^3.0.0"
 
-vant@3:
-  version "3.3.7"
-  resolved "https://registry.yarnpkg.com/vant/-/vant-3.3.7.tgz#57e97972148e173b88254402c83191cc6148fdbf"
-  integrity sha512-xDNqdBvBAELwkkC4QqzXvcqQJMCP6l0faYDH0aU1dfkIm7Muc+7gqyHMVhPKPFcDGBP33ilZd0Vg2+JoIQWitw==
+vant@^3.4.5:
+  version "3.4.5"
+  resolved "https://registry.yarnpkg.com/vant/-/vant-3.4.5.tgz#2934f6623d3705120607eb777ae4151ef192befe"
+  integrity sha512-3an2v6ejW9pijKmaDbSCW7Hs1R45tqtTIcedfI8hEAA5zC2Bp8cXU6Z4gUCK6/RAGOJsB+vcyLINLb1cGS/SzQ==
   dependencies:
     "@vant/icons" "^1.7.1"
     "@vant/popperjs" "^1.1.0"
-    "@vant/use" "^1.3.4"
+    "@vant/use" "^1.3.5"
 
 vary@~1.1.2:
   version "1.1.2"
