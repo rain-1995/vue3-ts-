@@ -192,8 +192,9 @@ export default defineComponent({
       },
       onRefresh() {
         state.mainContent = []
+        state.cursor = ''
         state.finished = false
-        this.getPageData()
+        methods.getPageData()
       },
       onLoad() {
         nextTick(() => {
