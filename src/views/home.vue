@@ -50,7 +50,7 @@
         <div class="bottom">
           <!-- {{ pageConfig.nodataToast }} -->
           <div>copyright by rain.weiyu</div>
-          <div>仅供学习交流使用</div>
+          <!-- <div>仅供学习交流使用</div> -->
         </div>
         <!-- </list> -->
       </div>
