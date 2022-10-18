@@ -26,5 +26,18 @@ export default {
   login: (data:object) => http('post', '/login/cellphone', data), // params:phone,captcha,password
   // 验证验证码
   verify: (data:object) => http('post', '/captcha/verify', data), // params:phone,captcha
+  // 获取账号信息
+  accountInfo: () => http('get', '/user/account'),
+  loginStatus: () => http('get', '/login/status'),
+
+  /**
+   * 二维码登录相关
+   */
+  // 获取二维码的key
+  getQrKey: () => http('get', '/login/qr/key'),
+  // 生成二维码
+  createQrCode: (data:object) => http('get', '/login/qr/create', data),
+  // 检测二维码状态，轮询此接口
+  checkQrCodeStatus: (data:object) => http('get', '/login/qr/check', data, { resolve: true, message: false })
 
 }

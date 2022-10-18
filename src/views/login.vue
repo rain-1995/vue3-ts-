@@ -7,6 +7,10 @@
     <div class="button" @click="login = true">
       手机号登录
     </div>
+    <div class="button qr-btn" @click="getQrKey()">
+      扫码登录
+    </div>
+    <!-- 手机号登录 -->
     <Popup
       v-model:show="login"
       position="bottom"
@@ -62,31 +66,68 @@
         </div>
       </div>
     </Popup>
+    <!-- 二维码登录 -->
+    <Overlay :show="qrLogin" @click="closeQrCode()">
+      <div class="qr-container">
+        <span class="img-warp" :class="{success: qr.status != 'wait'}">
+          <img :src="qr.img" alt="" class="pic">
+        </span>
+        <p class="tip">
+          <span v-show="qr.status == 'wait'">请使用网易云音乐APP扫码登录</span>
+          <span v-show="qr.status != 'wait'">{{ qr.text }}</span>
+        </p>
+      </div>
+    </Overlay>
   </div>
 </template>
 
 <script lang='ts'>
 import { defineComponent, toRefs, ref, reactive, onMounted, watch, nextTick } from 'vue'
-import { Popup, Field, PasswordInput, NumberKeyboard, Toast } from 'vant'
+import { Popup, Field, PasswordInput, NumberKeyboard, Toast, Overlay } from 'vant'
 import api from '@/api'
 import { keysObject } from '@/utils/types'
-import {useRouter} from 'vue-router'
-import {useStore} from 'vuex'
+import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
+
 export default defineComponent({
   name: 'LOGIN',
   components: {
     Popup,
     Field,
     PasswordInput,
-    NumberKeyboard
+    NumberKeyboard,
+    Overlay
   },
   setup() {
     const router = useRouter()
     const store = useStore()
     const showKeyboard = ref(false)
-    const login = ref(false)
+    const login = ref(false) // 手机号登录控制
+    const qrLogin = ref(false) // 二维码登录控制
     const next = ref(false)
     let timer = <any>''
+    const qrStatusTimer = <any>ref(null) // 轮询二维码状态
+    const codeStatusMap = {
+      // 801: {
+      //   type: 'wait',
+      //   desc: '等待扫码'
+      // },
+      802: {
+        type: 'success',
+        desc: '已扫码，请在手机上确认'
+      },
+      803: {
+        type: 'loginSuccess',
+        desc: '登录成功'
+      }
+    }
+    // 二维码相关
+    const qr = reactive({
+      key: '',
+      img: '',
+      text: '',
+      status: 'wait'
+    })
     // 状态数据
     const state = reactive({
       // login: true,
@@ -144,7 +185,7 @@ export default defineComponent({
         const passed = async() => {
           const res:keysObject = await api.login({ ...state.form })
           if (res.code == 200) {
-            store.dispatch('user/userInfo',res)
+            store.dispatch('user/userInfo', res)
             router.back()
           }
         }
@@ -152,6 +193,52 @@ export default defineComponent({
         if (code === 200) {
           passed()
         }
+      },
+      // 获取二维码key值
+      async getQrKey() {
+        const res:keysObject = await api.getQrKey()
+        if (res.code == 200) {
+          qr.key = res.data.unikey
+          this.createQrCode()
+        }
+      },
+      // 生成二维码
+      async createQrCode() {
+        const res:keysObject = await api.createQrCode({ key: qr.key, qrimg: true })
+        if (res.code === 200) {
+          qr.img = res.data.qrimg
+          nextTick(() => {
+            qrLogin.value = true
+            qrStatusTimer.value = setInterval(() => {
+              this.checkQrCode()
+            }, 800)
+          })
+        }
+      },
+      // 检查二维码扫码状态
+      async checkQrCode() {
+        try {
+          const res:keysObject = await api.checkQrCodeStatus({ key: qr.key })
+          console.log(res, 222)
+          qr.text = codeStatusMap[<keyof typeof codeStatusMap>res.code]?.desc || ''
+          qr.status = codeStatusMap[<keyof typeof codeStatusMap>res.code]?.type || 'wait'
+          if (res.code === 803) {
+            clearInterval(qrStatusTimer.value)
+            this.getAccountInfo()
+          }
+        } catch (error) {
+          console.log(error)
+        }
+      },
+      // 获取账号信息
+      async getAccountInfo() {
+        const res:keysObject = await api.loginStatus()
+        console.log(res, 'res')
+        // store.dispatch('user/userInfo', res.profile)
+        // router.back()
+      },
+      closeQrCode() {
+        qrLogin.value = false
       }
     }
 
@@ -159,9 +246,11 @@ export default defineComponent({
 
     return {
       ...toRefs(state),
+      qr,
       ...methods,
       showKeyboard,
       login,
+      qrLogin,
       next
     }
   }
@@ -200,6 +289,52 @@ export default defineComponent({
       margin: 1rem auto 0;
       font-weight: bold;
       font-size: 0.32rem;
+    }
+    .qr-btn{
+      background-color: #eb736a;
+      color:#fff;
+      margin-top: 0.4rem;
+    }
+    .qr-container{
+      width:100%;
+      position: absolute;
+      top: 30%;
+      left:50%;
+      transform: translate(-50%,-50%);
+      text-align: center;
+      .img-warp{
+        display: inline-block;
+        width:2rem;
+        height:2rem;
+        border-radius: 0.08rem;
+        position: relative;
+      }
+      .success::after{
+        line-height: 2rem;
+        content: '已扫码';
+        display: inline-block;
+        position: absolute;
+        left:0;
+        top:0;
+        z-index: 10;
+        width:100%;
+        height:100%;
+        background-color: rgba(0,0,0,.7);
+        color:#fff;
+        font-weight: bold;
+      }
+      .pic{
+        width:100%;
+        height:100%;
+      }
+      .tip{
+        width:1
+        00%;
+        color: #fff;
+        font-weight: bold;
+        text-align: center;
+        margin-top: 0.4rem;
+      }
     }
     .login_box{
       width:100%;
