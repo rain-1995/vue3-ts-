@@ -90,7 +90,7 @@ export default defineComponent({
     // 状态数据
     const state = reactive({
       showKeyword: '',
-      showMenu: true,
+      showMenu: false,
       clickCount: <number>0
     })
 
