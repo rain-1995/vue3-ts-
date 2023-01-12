@@ -28,6 +28,7 @@ export default {
   verify: (data:object) => http('post', '/captcha/verify', data), // params:phone,captcha
   // 获取账号信息
   accountInfo: () => http('get', '/user/account'),
+  // 检查登录状态
   loginStatus: () => http('get', '/login/status'),
 
   /**
@@ -38,6 +39,19 @@ export default {
   // 生成二维码
   createQrCode: (data:object) => http('get', '/login/qr/create', data),
   // 检测二维码状态，轮询此接口
-  checkQrCodeStatus: (data:object) => http('get', '/login/qr/check', data, { resolve: true, message: false })
+  checkQrCodeStatus: (data:object) => http('get', '/login/qr/check', data, { resolve: true, message: false }),
+
+  /**
+   * 个人主页相关
+   */
+
+  // 我喜欢的音乐列表
+  likeList: (data:object) => http('get', '/likelist', data),
+  // 获取用户信息 , 歌单，收藏，mv, dj 数量
+  userSubInfo: (data:object) => http('get', '/user/subcount', data),
+  // 获取用户歌单
+  userPlayList: (data:object) => http('get', '/user/playlist', data),
+  // 用户详情
+  userDetail: (data:object) => http('get', '/user/detail', data),
 
 }

@@ -1,5 +1,5 @@
 <template>
-  <div class="header">
+  <div class="header" :style="{'backgroundColor': headerColor}">
     <div class="more" @click="showMenu = true">
       <svg-icon icon-class="cebianlan" />
     </div>
@@ -30,10 +30,10 @@
     >
       <div class="menu">
         <div class="user" @click="userCenter">
-          <svg-icon icon-class="touxiang" class="avatar_icon" />
-          <!-- <img src="" alt="" class="avatar"> -->
+          <svg-icon v-if="!userInfo?.avatarUrl" icon-class="touxiang" class="avatar_icon" />
+          <img v-else :src="userInfo?.avatarUrl" alt="" class="avatar">
           <span class="username">
-            立即登录
+            {{Object.keys(userInfo).length && userInfo.nickname ? userInfo.nickname : '立即登录'}}
             <svg-icon icon-class="rightjiantou" class="icon" />
           </span>
         </div>
@@ -69,20 +69,21 @@
 </template>
 
 <script lang='ts'>
-import { defineComponent, toRefs, ref, reactive, toRef, computed, onMounted } from 'vue'
+import { defineComponent, toRefs, reactive, onMounted, computed, nextTick } from 'vue'
 import api from '@/api'
 import { Popup } from 'vant'
 import useState from '@/utils/useState'
 import { useStore } from 'vuex'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 export default defineComponent({
   name: 'HEADER',
   components: { Popup },
-  setup(props, context) {
+  setup() {
     const storeState = useState('audioPlayer', ['songInfo', 'playing'])
     const user = useState('user', ['userInfo'])
     const store = useStore()
     const router = useRouter()
+    const route = useRoute()
     const sets = reactive([
       { title: '消息中心', icon: 'duanxin' },
       { title: '云贝中心', icon: 'yunbei' }
@@ -94,13 +95,22 @@ export default defineComponent({
       clickCount: <number>0
     })
 
+    const colorMap = {
+      my: '#f6f8f9',
+      other: '#f5f4f4'
+    }
+
     // 方法
     const methods = {
-      userCenter() {
-        if (user.userInfo) {
-
+      // 跳转个人主页
+      async userCenter() {
+        if (user.userInfo.value && Object.keys(user.userInfo.value).length) {
+          router.push('/my')
+        } else {
+          router.push('/login')
         }
-        console.log('user.userInfo', user.userInfo)
+        await nextTick()
+        state.showMenu = false
       },
       playState() {
         state.clickCount++
@@ -122,8 +132,11 @@ export default defineComponent({
       }
     }
 
-    // 计算属性
-    const computes = {}
+    const headerColor = computed(() => {
+      return colorMap?.[<keyof typeof colorMap>route.name] || colorMap['other']
+    })
+
+    const userInfo = computed(() => user.userInfo.value)
 
     onMounted(() => {
       methods.searchDefaultWord()
@@ -132,9 +145,10 @@ export default defineComponent({
     return {
       ...toRefs(state),
       ...methods,
-      ...computes,
+      headerColor,
       storeState,
-      sets
+      sets,
+      userInfo
     }
   }
 })
@@ -150,7 +164,7 @@ export default defineComponent({
     box-sizing: border-box;
     position: relative;
     z-index: 999;
-    background: #f5f4f4;
+    // background: v-bind('color');
     .more{
       margin-right: 0.4rem;
     }

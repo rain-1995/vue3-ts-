@@ -1,11 +1,12 @@
 <template>
-  <div class="refresh" :class="[loading?'active':'in_active']">
+  <div v-if="load" ref="load" class="refresh" :class="[loading?'active':'in_active']">
     <svg-icon icon-class="shuaxin" class="icon" />
   </div>
 </template>
 
 <script lang='ts'>
-import { defineComponent, toRefs, ref, reactive, toRef, computed, onMounted, nextTick } from 'vue'
+import { Loading } from 'vant'
+import { defineComponent, toRefs, ref, reactive, computed, onMounted, watch } from 'vue'
 
 export default defineComponent({
   name: 'REFRESH',
@@ -15,14 +16,18 @@ export default defineComponent({
       default: true
     }
   },
-  setup(props, context) {
+  setup(props) {
     // 状态数据
     const state = reactive({})
 
-    // 方法
-    const methods = {
+    const load = ref<boolean>(false)
 
-    }
+    watch(() => Loading.value, () => {
+      load.value = true
+      setTimeout(() => {
+        load.value = false
+      }, 2000)
+    }, { immediate: true })
 
     // 计算属性
     const computes = {
@@ -33,8 +38,8 @@ export default defineComponent({
 
     return {
       ...toRefs(state),
-      ...methods,
-      ...computes
+      ...computes,
+      load
     }
   }
 })
@@ -73,6 +78,7 @@ export default defineComponent({
   .in_active{
     animation:loaded .4s linear 1;
     animation-fill-mode:forwards;
+
   }
   @keyframes load{
       from{

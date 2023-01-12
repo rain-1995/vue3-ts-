@@ -219,7 +219,6 @@ export default defineComponent({
       async checkQrCode() {
         try {
           const res:keysObject = await api.checkQrCodeStatus({ key: qr.key })
-          console.log(res, 222)
           qr.text = codeStatusMap[<keyof typeof codeStatusMap>res.code]?.desc || ''
           qr.status = codeStatusMap[<keyof typeof codeStatusMap>res.code]?.type || 'wait'
           if (res.code === 803) {
@@ -232,17 +231,15 @@ export default defineComponent({
       },
       // 获取账号信息
       async getAccountInfo() {
-        const res:keysObject = await api.loginStatus()
+        const res:keysObject = await api.accountInfo()
         console.log(res, 'res')
-        // store.dispatch('user/userInfo', res.profile)
-        // router.back()
+        store.dispatch('user/userInfo', res.profile)
+        router.back()
       },
       closeQrCode() {
         qrLogin.value = false
       }
     }
-
-    onMounted(() => {})
 
     return {
       ...toRefs(state),

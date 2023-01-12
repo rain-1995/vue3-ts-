@@ -12,10 +12,11 @@ http.interceptors.request.use(config => {
 }, err => {
   Promise.reject(err)
 })
-http.interceptors.response.use(res => {
+http.interceptors.response.use((res): Promise<void> => {
   const { data } = res
+  const code = data.code || data.data?.code
   console.log(data, 'data')
-  if (data.code !== 200) {
+  if (code !== 200) {
     return Promise.reject(data)
   }
   return Promise.resolve(data)
@@ -32,7 +33,7 @@ http.interceptors.response.use(res => {
  * @param options 配置参数
  * @returns promise
  */
-const request:paramsModel = (method = 'get', url = '', data = {}, options:keysObject = {}):object => {
+const request:paramsModel = (method = 'get', url = '', data = {}, options:keysObject = {}):Promise<keysObject> => {
   const dataMap = {
     'post': { data: qs.stringify(data) },
     'get': { params: data }

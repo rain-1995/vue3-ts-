@@ -33,7 +33,7 @@ export const routes : routeModel[] = [
   {
     path: '/my',
     name: 'my',
-    component: () => import('@/views/my.vue'),
+    component: () => import('@/views/my/index.vue'),
     meta: {
       title: '我的'
     }

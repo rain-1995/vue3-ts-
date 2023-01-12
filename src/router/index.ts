@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory, createWebHashHistory, RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 const routes:[] = []
 const files = require.context('./modules/', false, /.ts$/)
 files.keys().forEach(file => {

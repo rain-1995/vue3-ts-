@@ -14,24 +14,40 @@
 
 <script lang='ts'>
 import { useRoute } from 'vue-router'
-import { defineComponent, toRefs, ref, reactive, toRef, computed, onMounted } from 'vue'
+import { defineComponent, toRefs, reactive, watch } from 'vue'
 import Header from '@/components/header.vue'
 import TabBar from '@/components/tabBar.vue'
+import { useStore } from 'vuex'
 export default defineComponent({
   name: 'LAYOUT',
   components: { Header, TabBar },
-  setup(props, context) {
+  setup() {
+    const store = useStore()
+
     // 状态数据
     const state = reactive({
       route: useRoute()
     })
+
+    // 登录后获取用户信息
+    watch(() => store.state.user.userInfo, (val = {}) => {
+      store.dispatch('user/loginStatus').then(res => {
+        if (res?.data?.account) {
+          if (!val || !Object.keys(val).length) {
+            store.dispatch('user/getUserInfo').then(res => {
+              const { profile = {}} = res
+              store.dispatch('user/userInfo', profile)
+            })
+          }
+        }
+      })
+    }, { immediate: true, deep: true })
+
     // 方法
     const methods = {}
 
     // 计算属性
     const computes = {}
-
-    onMounted(() => {})
 
     return {
       ...toRefs(state),

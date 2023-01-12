@@ -10,8 +10,9 @@ module.exports = {
     'eslint:recommended',
     'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended',
-    'plugin:vue/recommended',
-    'plugin:vue/essential'
+    // 'plugin:vue/recommended',
+    // 'plugin:vue/essential',
+    'plugin:vue/vue3-recommended'
   ],
   'parserOptions': {
     'ecmaVersion': 13,
@@ -54,7 +55,7 @@ module.exports = {
     'curly': [2, 'multi-line'],
     'dot-location': [2, 'property'],
     'eol-last': 2,
-    'eqeqeq': [2, 'allow-null'],
+    'eqeqeq': [0, 'allow-null'], // Require the use of === and !==
     'generator-star-spacing': [2, {
       'before': true,
       'after': true
@@ -173,7 +174,7 @@ module.exports = {
       'avoidEscape': true,
       'allowTemplateLiterals': true
     }],
-    'semi': [2, 'never'],
+    'semi': [2, 'never'], // 禁止尾部使用分号“ ; ”
     'semi-spacing': [2, {
       'before': false,
       'after': true
