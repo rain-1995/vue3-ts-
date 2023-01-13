@@ -45,11 +45,11 @@ export default defineComponent({
           icon: 'find',
           route: '/home'
         },
-        {
-          name: '播客',
-          icon: 'xinhao',
-          route: '/podcast'
-        },
+        // {
+        //   name: '播客',
+        //   icon: 'xinhao',
+        //   route: '/podcast'
+        // },
         {
           name: '我的',
           icon: 'my',

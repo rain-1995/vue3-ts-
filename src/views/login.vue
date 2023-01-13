@@ -1,6 +1,9 @@
 /* eslint-disable vue/no-v-model-argument */
 <template>
   <div class="login">
+    <div class="back-home" @click="backHome">
+      <i class="iconfont icon-zhiyuanfanhui16" />
+    </div>
     <div class="icon">
       <img src="@/assets/icon/logo.png" alt="">
     </div>
@@ -82,7 +85,7 @@
 </template>
 
 <script lang='ts'>
-import { defineComponent, toRefs, ref, reactive, onMounted, watch, nextTick } from 'vue'
+import { defineComponent, toRefs, ref, reactive, watch, nextTick } from 'vue'
 import { Popup, Field, PasswordInput, NumberKeyboard, Toast, Overlay } from 'vant'
 import api from '@/api'
 import { keysObject } from '@/utils/types'
@@ -150,6 +153,10 @@ export default defineComponent({
     })
     // 方法
     const methods = {
+      backHome() {
+        router.replace('/home')
+      },
+
       reset() {
         next.value = false
         for (const key in state.form) {
@@ -403,6 +410,15 @@ export default defineComponent({
         .next{
           opacity: .4;
         }
+      }
+    }
+    .back-home{
+      position: absolute;
+      left: 0.3rem;
+      top:0.4rem;
+      i{
+        font-size: 0.5rem;
+        color:#fff;
       }
     }
   }

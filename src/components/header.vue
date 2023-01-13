@@ -33,7 +33,7 @@
           <svg-icon v-if="!userInfo?.avatarUrl" icon-class="touxiang" class="avatar_icon" />
           <img v-else :src="userInfo?.avatarUrl" alt="" class="avatar">
           <span class="username">
-            {{Object.keys(userInfo).length && userInfo.nickname ? userInfo.nickname : '立即登录'}}
+            {{ Object.keys(userInfo).length && userInfo.nickname ? userInfo.nickname : '立即登录' }}
             <svg-icon icon-class="rightjiantou" class="icon" />
           </span>
         </div>
@@ -60,7 +60,7 @@
             </p>
           </div>
         </div>
-        <div class="logout set">
+        <div class="logout set" @click="logout">
           退出登录
         </div>
       </div>
@@ -102,6 +102,12 @@ export default defineComponent({
 
     // 方法
     const methods = {
+      // 退出登录
+      logout() {
+        store.dispatch('user/logout').then(res => {
+          router.replace('/login')
+        })
+      },
       // 跳转个人主页
       async userCenter() {
         if (user.userInfo.value && Object.keys(user.userInfo.value).length) {

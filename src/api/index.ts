@@ -30,6 +30,8 @@ export default {
   accountInfo: () => http('get', '/user/account'),
   // 检查登录状态
   loginStatus: () => http('get', '/login/status'),
+  // 退出登录
+  logout: () => http('get', '/logout'),
 
   /**
    * 二维码登录相关
@@ -54,4 +56,6 @@ export default {
   // 用户详情
   userDetail: (data:object) => http('get', '/user/detail', data),
 
+  // 动态
+  dynamic: (data:object) => http('get', '/event', data)
 }

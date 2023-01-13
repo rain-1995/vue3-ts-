@@ -43,6 +43,17 @@ export default {
       } catch (error) {
         console.log(error, 'error')
       }
+    },
+    // 获取用户详情
+    async logout({ commit }:keysObject) {
+      try {
+        await api.logout()
+        Cookie.remove('user-info')
+        commit('SET_USERINFO', {})
+        return Promise.resolve(true)
+      } catch (error) {
+        console.log(error, 'error')
+      }
     }
   },
   getters: {}

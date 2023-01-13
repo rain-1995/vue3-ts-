@@ -175,7 +175,8 @@ export default defineComponent({
       // 轮播图
       async getBanner() {
         const { banners }:any = await api.swiperList({ type: 1 })
-        // const res:any = await api.hotTopic()
+        // const res:any = await api.hotTopic({limit: 100, offset: 1})
+        // api.dynamic({lasttime: -1, pagesize: 20})
         state.bannerList = banners
       },
       // 轮播图跳转
