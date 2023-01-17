@@ -65,6 +65,15 @@ export const routes : routeModel[] = [
     }
   },
   {
+    path: '/sheetSquare',
+    name: 'sheetSquare',
+    component: () => import('@/views/sheetSquare/index.vue'),
+    meta: {
+      title: '歌单广场',
+      fullScreen: true
+    }
+  },
+  {
     path: '/login',
     name: 'login',
     component: () => import('@/views/login.vue'),
@@ -72,5 +81,5 @@ export const routes : routeModel[] = [
       title: '登录',
       fullScreen: true
     }
-  },
+  }
 ]

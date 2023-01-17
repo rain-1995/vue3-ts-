@@ -51,11 +51,6 @@ export default defineComponent({
         //   route: '/podcast'
         // },
         {
-          name: '我的',
-          icon: 'my',
-          route: '/my'
-        },
-        {
           name: '关注',
           icon: 'lianxiren',
           route: '/follow'
@@ -64,7 +59,12 @@ export default defineComponent({
           name: '云村',
           icon: 'yun',
           route: '/cloud'
-        }
+        },
+        {
+          name: '我的',
+          icon: 'my',
+          route: '/my'
+        },
       ]
     })
 

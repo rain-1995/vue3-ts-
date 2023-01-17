@@ -44,7 +44,7 @@ export default {
         console.log(error, 'error')
       }
     },
-    // 获取用户详情
+    // 退出登录
     async logout({ commit }:keysObject) {
       try {
         await api.logout()

@@ -23,7 +23,7 @@ export default {
   // 发送验证码
   sendCode: (data:object) => http('post', '/captcha/sent', data), // params:phone
   // 登录
-  login: (data:object) => http('post', '/login/cellphone', data), // params:phone,captcha,password
+  login: (data:object) => http('get', '/login/cellphone', data), // params:phone,captcha,password
   // 验证验证码
   verify: (data:object) => http('post', '/captcha/verify', data), // params:phone,captcha
   // 获取账号信息

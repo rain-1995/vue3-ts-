@@ -15,7 +15,7 @@
           </span>
         </div>
       </div>
-      <span class="button">更多<svg-icon icon-class="rightjiantou" class="icon" /></span>
+      <!-- <span class="button">更多<svg-icon icon-class="rightjiantou" class="icon" /></span> -->
     </div>
     <div class="swiper_mode">
       <Swipe ref="swiperRef" class="" :lazy-render="true" :show-indicators="false" width="340" :loop="false">
@@ -186,6 +186,13 @@ export default defineComponent({
             font-weight: bold;
             margin-bottom: 0.2rem;
             text-align: left;
+            text-overflow: -o-ellipsis-lastline;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            line-clamp: 1;
+            -webkit-box-orient: vertical;
           }
           .sub{
             font-size: 0.24rem;
@@ -194,8 +201,8 @@ export default defineComponent({
             overflow: hidden;
             text-overflow: ellipsis;
             display: -webkit-box;
-            -webkit-line-clamp: 2;
-            line-clamp: 2;
+            -webkit-line-clamp: 1;
+            line-clamp: 1;
             -webkit-box-orient: vertical;
           }
         }

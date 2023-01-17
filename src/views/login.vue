@@ -1,9 +1,9 @@
 /* eslint-disable vue/no-v-model-argument */
 <template>
   <div class="login">
-    <div class="back-home" @click="backHome">
+    <!-- <div class="back-home" @click="backHome">
       <i class="iconfont icon-zhiyuanfanhui16" />
-    </div>
+    </div> -->
     <div class="icon">
       <img src="@/assets/icon/logo.png" alt="">
     </div>
@@ -13,6 +13,7 @@
     <div class="button qr-btn" @click="getQrKey()">
       扫码登录
     </div>
+    <div class="tips" @click="backHome">随便看看</div>
     <!-- 手机号登录 -->
     <Popup
       v-model:show="login"
@@ -419,6 +420,24 @@ export default defineComponent({
       i{
         font-size: 0.5rem;
         color:#fff;
+      }
+    }
+    .tips{
+      font-size: 0.24rem;
+      color: rgba(255,255,255,.7);
+      margin-top: .2rem;
+      position: relative;
+      display: inline-block;
+      padding-bottom: 0.08rem;
+      &::after{
+        content: '';
+        position: absolute;
+        left:0;
+        bottom: 0;
+        width: 100%;
+        height: 1px;
+        background-color: rgb(231, 231, 231);
+
       }
     }
   }
