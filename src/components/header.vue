@@ -96,6 +96,7 @@ export default defineComponent({
     })
 
     const colorMap = {
+      home: 'rgba(0,0,0,0)',
       my: '#f6f8f9',
       other: '#f5f4f4'
     }
