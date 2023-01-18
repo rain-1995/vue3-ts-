@@ -4,7 +4,7 @@
       <svg-icon icon-class="cebianlan" />
     </div>
     <div class="content">
-      <div class="search">
+      <div class="search" @click="toSearch">
         <svg-icon icon-class="search" class="icon" />
         <span class="text">{{ showKeyword }}</span>
       </div>
@@ -102,6 +102,9 @@ export default defineComponent({
 
     // 方法
     const methods = {
+      toSearch() {
+        router.push(`/search?keyword=${state.showKeyword}`)
+      },
       // 退出登录
       logout() {
         store.dispatch('user/logout').then(res => {

@@ -57,5 +57,18 @@ export default {
   userDetail: (data:object) => http('get', '/user/detail', data),
 
   // 动态
-  dynamic: (data:object) => http('get', '/event', data)
+  dynamic: (data:object) => http('get', '/event', data),
+
+  // 榜单
+  topList: () => http('get', '/toplist'),
+  // 所有榜单内容摘要
+  topListDetail: () => http('get', '/toplist/detail'),
+  // 热搜
+  hotSearchList: () => http('get', '/search/hot'),
+  // 热搜详细
+  hotSearchListDetail: () => http('get', '/search/hot/detail'),
+  // 搜索建议
+  suggest: (data:object) => http('get', '/search/suggest', data),
+  multimatch: (data:object) => http('get', '/search/multimatch', data),
+  cloudsearch: (data:object) => http('get', '/cloudsearch', data),
 }
