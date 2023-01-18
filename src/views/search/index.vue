@@ -16,7 +16,7 @@
       </span>
       <span class="search" @click="search">搜索</span>
     </div>
-    <template v-if="!keyWord">
+    <template v-if="keyWord">
       <div class="history">
         <p class="main-title">
           <span>搜索历史</span>
@@ -68,21 +68,42 @@
       </div>
     </template>
     <template v-else>
-      <div class="association-list">
+      <!-- 搜索联想 -->
+      <div v-if="associationList.length" class="association-list">
         <p v-for="(item, index) in associationList" :key="index" class="key-item">
           <i class="iconfont icon-sousuo" />
           <span class="text">{{ item.keyword }}</span>
         </p>
+      </div>
+      <!-- 搜索结果 -->
+      <div class="search-result">
+        <div class="tab-warp">
+          <Tabs
+            v-model:active="curTab"
+            swipeable
+            animated
+            background="rgba(0,0,0,0)"
+            @change="tabChange"
+          >
+            <Tab
+              v-for="(item, index) in tabs"
+              :key="index"
+              :title="item.title"
+              :name="item.key"
+            />
+          </Tabs>
+        </div>
       </div>
     </template>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, reactive, nextTick } from 'vue'
 import { Field, Swipe, SwipeItem } from 'vant'
 import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
+import { Tab, Tabs } from 'vant'
 import api from '@/api'
 import useState from '@/utils/useState'
 
@@ -128,6 +149,17 @@ interface associationType {
 
 const associationList = ref([] as associationType[]) // 搜索关键字联想结果
 
+const curTab = ref(1) // 选中的tab
+
+const tabs = reactive([
+  { title: '单曲', key: 1 },
+  { title: '歌单', key: 1000 },
+  { title: '歌手', key: 100 },
+  { title: '视频', key: 1014 },
+  { title: 'MV', key: 1004 },
+  { title: '用户', key: 1002 },
+])
+
 const historyList = computed(() => {
   return storeState.history.value
 })
@@ -135,6 +167,10 @@ const historyList = computed(() => {
 const placeholder = computed(() => {
   return route.query.keyword as string || ''
 })
+
+function tabChange(name: number) {
+  getTabsRes(name)
+}
 
 // 获取联想词列表
 async function getSuggest(val = '') {
@@ -158,8 +194,13 @@ function formatHistory(list: [] = []) {
 }
 
 async function search() {
-  const res = await api.cloudsearch({keywords: keyWord.value, type: 1014})
-  // setHistory(keyWord.value, 'update')
+  getTabsRes(1)
+  await nextTick()
+  setHistory(keyWord.value, 'update')
+}
+
+async function getTabsRes(key: number) {
+  const res = await api.cloudsearch({ keywords: '理想', type: key })
 }
 
 function setHistory(data: string, type = 'update') {
@@ -382,6 +423,24 @@ onMounted(() => {
 
     }
 
+  }
+}
+:deep(.tab-warp){
+  margin-top: 0.2rem;
+  .van-tabs__wrap{
+    height: auto;
+  }
+  .van-tabs__line{
+    width: 0.7rem;
+    height: 0.12rem;
+    border-radius: 0.4rem;
+    z-index: 0;
+  }
+  .van-tab{
+    z-index: 10;
+  }
+  .van-tab--active{
+    font-weight: bold;
   }
 }
 
