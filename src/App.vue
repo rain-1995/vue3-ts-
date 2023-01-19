@@ -70,9 +70,11 @@ export default defineComponent({
     height: 100vh;
     // background-color: rgb(245, 244, 244);
     // background:linear-gradient(to bottom,rgb(245, 244, 244) 0.7rem,#fff 100%);
-    background-image: linear-gradient(to bottom, #f1CA74, #A64DB6,#fff 30%);
+    // background-image: linear-gradient(to bottom, rgba(195,176,214,.8) 10%,#fff 30%);
+    background-image: linear-gradient(to bottom, rgba(188,194,215,.8) 10%,#fff 30%);
     box-sizing: border-box;
     overflow: hidden;
+    transition: all .3s;
     .view{
       height: calc(100% - 1.2rem);
       overflow: auto;
