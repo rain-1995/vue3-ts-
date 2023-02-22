@@ -49,7 +49,7 @@ export default defineComponent({
   .refresh{
     position: fixed;
     left: 50%;
-    top: 0;
+    top: 1.2rem;
     transform: translate(-50%,0);
     border-radius: 50%;
     background-color: rgba(255,255,255,1);
@@ -76,8 +76,9 @@ export default defineComponent({
     animation-fill-mode:forwards;
   }
   .in_active{
-    animation:loaded .4s linear 1;
-    animation-fill-mode:forwards;
+    display: none;
+    // animation:loaded .4s linear 1;
+    // animation-fill-mode:forwards;
 
   }
   @keyframes load{
@@ -85,7 +86,7 @@ export default defineComponent({
         -webkit-transform:translate(-50%,0);
       }
       to{
-        -webkit-transform:translate(-50%,1.6rem);
+        -webkit-transform:translate(-50%,0.4rem);
       }
     }
   @keyframes loaded{

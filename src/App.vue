@@ -2,11 +2,11 @@
   <div class="layout">
     <template v-if="!route.meta?.fullScreen||false">
       <Header />
-      <router-view class="view" />
+      <router-view id="view" class="view" />
       <TabBar />
     </template>
     <template v-else>
-      <router-view class="view" style="height:100%;padding-bottom:0;" />
+      <router-view id="view" class="view" style="height:100%;padding-bottom:0;" />
     </template>
     <AudioPlayer style="display:none;" />
   </div>
@@ -14,7 +14,7 @@
 
 <script lang='ts'>
 import { useRoute } from 'vue-router'
-import { defineComponent, toRefs, reactive, watch } from 'vue'
+import { defineComponent, toRefs, reactive, watch, computed, ref, onMounted, nextTick } from 'vue'
 import Header from '@/components/header.vue'
 import TabBar from '@/components/tabBar.vue'
 import { useStore } from 'vuex'
@@ -28,6 +28,12 @@ export default defineComponent({
     const state = reactive({
       route: useRoute()
     })
+
+    // 渐变背景色
+    const topColor = ref('linear-gradient(to bottom, rgba(188,194,215,.8) 10%,#fff 30%)')
+
+    // 普通背景色
+    const normalColor = ref('rgb(245, 244, 244)')
 
     // 登录后获取用户信息
     watch(() => store.state.user.userInfo, (val = {}) => {
@@ -44,15 +50,29 @@ export default defineComponent({
     }, { immediate: true, deep: true })
 
     // 方法
-    const methods = {}
+    const methods = {
+      handleScroll() {
+        console.log(document.body.scrollTop || document.documentElement.scrollTop, 123)
+      }
+    }
 
     // 计算属性
-    const computes = {}
+    const isHome = computed(() => {
+      return state.route.name == 'home'
+    })
 
+    onMounted(async() => {
+      await nextTick()
+      const dom = <any>(document.querySelector('.layout'))
+      console.log(dom, 123)
+      dom.addEventListener('scroll', methods.handleScroll, true)
+    })
     return {
       ...toRefs(state),
       ...methods,
-      ...computes
+      isHome,
+      topColor,
+      normalColor
     }
   }
 })
@@ -71,10 +91,11 @@ export default defineComponent({
     // background-color: rgb(245, 244, 244);
     // background:linear-gradient(to bottom,rgb(245, 244, 244) 0.7rem,#fff 100%);
     // background-image: linear-gradient(to bottom, rgba(195,176,214,.8) 10%,#fff 30%);
-    background-image: linear-gradient(to bottom, rgba(188,194,215,.8) 10%,#fff 30%);
+    background: v-bind('isHome ? topColor : normalColor');
     box-sizing: border-box;
-    overflow: hidden;
+    // overflow: hidden;
     transition: all .3s;
+    overflow: auto;
     .view{
       height: calc(100% - 1.2rem);
       overflow: auto;
