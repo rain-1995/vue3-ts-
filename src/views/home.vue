@@ -66,7 +66,14 @@ import scrollModel from '@/components/scrollmodel.vue'
 import swiperModel from '@/components/swiperModel.vue'
 import refresh from '@/components/refresh.vue'
 import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
 import { keysObject } from '@/utils/types'
+
+// 声明自定义扩展事件类型
+declare interface myEventTarget extends EventTarget {
+  scrollTop: number | string;
+}
+
 export default defineComponent({
   name: 'HOME',
   components: {
@@ -77,9 +84,11 @@ export default defineComponent({
     refresh,
     List
   },
-  setup(props, context) {
+  setup() {
     const router = useRouter()
-    // 状态数据
+    const store = useStore()
+    
+    // 状态数据\docs\rules\no-trailing-spaces\docs\rules\no-trailing-spaces
     const state = reactive({
       loading: true,
       pullUp: true,
@@ -203,6 +212,10 @@ export default defineComponent({
             methods.getPageData()
           }
         })
+      },
+      handleScroll(e: Event) {
+        const scrollTop = (<myEventTarget>e.target).scrollTop
+        store.commit('base/IS_USE_GRADUAL_COLOR', scrollTop < 10)
       }
     }
 
@@ -210,6 +223,8 @@ export default defineComponent({
     const computes = {}
 
     onMounted(() => {
+      store.commit('base/IS_USE_GRADUAL_COLOR', window.screenTop < 10)
+      window.addEventListener('scroll', methods.handleScroll as (e: Event) => void, true)
       methods.init()
     })
 

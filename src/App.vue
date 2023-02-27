@@ -14,10 +14,11 @@
 
 <script lang='ts'>
 import { useRoute } from 'vue-router'
-import { defineComponent, toRefs, reactive, watch, computed, ref, onMounted, nextTick } from 'vue'
+import { defineComponent, toRefs, reactive, watch, computed, ref } from 'vue'
 import Header from '@/components/header.vue'
 import TabBar from '@/components/tabBar.vue'
 import { useStore } from 'vuex'
+import useState from '@/utils/useState'
 export default defineComponent({
   name: 'LAYOUT',
   components: { Header, TabBar },
@@ -29,11 +30,19 @@ export default defineComponent({
       route: useRoute()
     })
 
+    const storeState = useState('base', ['useGradualColor'])
+
+    const colorCollect = ['#7B6AE0', '#FFBB89', '#8DA2EE', '#FFADF7', '#B1FF96']
+
+    const randomColor = computed(() => {
+      return colorCollect[Math.floor(Math.random() * 5)]
+    })
+
     // 渐变背景色
-    const topColor = ref('linear-gradient(to bottom, rgba(188,194,215,.8) 10%,#fff 30%)')
+    const gradualColor = ref(`linear-gradient(to bottom, ${randomColor.value} 0, #fff 30% )`)
 
     // 普通背景色
-    const normalColor = ref('rgb(245, 244, 244)')
+    const normalColor = ref('rgba(245, 244, 244,.7)')
 
     // 登录后获取用户信息
     watch(() => store.state.user.userInfo, (val = {}) => {
@@ -49,29 +58,15 @@ export default defineComponent({
       })
     }, { immediate: true, deep: true })
 
-    // 方法
-    const methods = {
-      handleScroll() {
-        console.log(document.body.scrollTop || document.documentElement.scrollTop, 123)
-      }
-    }
-
-    // 计算属性
-    const isHome = computed(() => {
-      return state.route.name == 'home'
+    // 是否使用渐变背景
+    const useGradualColor = computed(() => {
+      return state.route.name == 'home' && storeState.useGradualColor.value
     })
 
-    onMounted(async() => {
-      await nextTick()
-      const dom = <any>(document.querySelector('.layout'))
-      console.log(dom, 123)
-      dom.addEventListener('scroll', methods.handleScroll, true)
-    })
     return {
       ...toRefs(state),
-      ...methods,
-      isHome,
-      topColor,
+      useGradualColor,
+      gradualColor,
       normalColor
     }
   }
@@ -88,12 +83,8 @@ export default defineComponent({
   .layout{
     width:100%;
     height: 100vh;
-    // background-color: rgb(245, 244, 244);
-    // background:linear-gradient(to bottom,rgb(245, 244, 244) 0.7rem,#fff 100%);
-    // background-image: linear-gradient(to bottom, rgba(195,176,214,.8) 10%,#fff 30%);
-    background: v-bind('isHome ? topColor : normalColor');
+    background: v-bind('useGradualColor ? gradualColor : normalColor');
     box-sizing: border-box;
-    // overflow: hidden;
     transition: all .3s;
     overflow: auto;
     .view{
