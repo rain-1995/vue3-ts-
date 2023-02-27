@@ -4,16 +4,23 @@
       <span>{{ title }}</span>
       <span>({{ count }}个)</span>
     </p>
-    <li v-for="(item, index) in list" :key="index" class="song-item" @click="playListDetail(item)">
-      <img :src="item?.coverImgUrl" alt="" class="cover">
-      <div class="song-info">
-        <span class="song-title">{{ item?.name }}</span>
-        <p class="sub-info">
-          <span>{{ item?.trackCount }}首</span>
-          <span v-if="showAuthor" class="author">，by{{ item?.creator?.nickname }}</span>
-        </p>
+    <template v-if="list.length">
+      <li v-for="(item, index) in list" :key="index" class="song-item" @click="playListDetail(item)">
+        <img :src="item?.coverImgUrl" alt="" class="cover">
+        <div class="song-info">
+          <span class="song-title">{{ item?.name }}</span>
+          <p class="sub-info">
+            <span>{{ item?.trackCount }}首</span>
+            <span v-if="showAuthor" class="author">，by{{ item?.creator?.nickname }}</span>
+          </p>
+        </div>
+      </li>
+    </template>
+    <template v-else>
+      <div class="no-data">
+        暂无歌单~
       </div>
-    </li>
+    </template>
   </div>
 </template>
 
@@ -101,6 +108,10 @@ function playListDetail(data: {id:number}) {
       text-align: left;
     }
   }
+}
+.no-data{
+  font-size: 0.24rem;
+  color: rgba(0,0,0,.4);
 }
 
 </style>

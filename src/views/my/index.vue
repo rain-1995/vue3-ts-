@@ -106,7 +106,7 @@ const moduleList = reactive([
 
 const userInfo = computed(() => store?.state?.user?.userInfo || {})
 
-function playListDetail(data: {id:number}) {
+function playListDetail(data: {id:number | string}) {
   router.push(`/songSheet/${data.id}`)
 }
 
