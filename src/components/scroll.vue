@@ -180,12 +180,10 @@ export default defineComponent({
         }, 1000)
       })
     })
-    onMounted(() => {
-      // nextTick(() => {
-      //   setTimeout(() => {
+    onMounted(async() => {
       methods._initScroll()
-      //   }, 1000)
-      // })
+      await nextTick()
+      methods.refresh()
     })
 
     return {

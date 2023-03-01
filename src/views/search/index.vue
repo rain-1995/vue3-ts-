@@ -12,18 +12,19 @@
           :placeholder="placeholder"
           type="text"
           @update:model-value="getSuggest"
+          @clear="handleClear"
         />
       </span>
       <span class="search" @click="search">搜索</span>
     </div>
-    <template v-if="keyWord">
+    <template v-if="!keyWord">
       <div class="history">
         <p class="main-title">
           <span>搜索历史</span>
           <i class="iconfont icon-lajixiang" @click="setHistory('', 'delete')" />
         </p>
         <ul v-if="historyList.length" class="word-list">
-          <li v-for="(item, index) in formatHistory(historyList)" :key="index" class="item">
+          <li v-for="(item, index) in formatHistory(historyList)" :key="index" class="item" @click="viewDetail({keyword: item})">
             {{ item }}
           </li>
           <li v-if="historyList.length > 2" class="item more" :class="{active: moreFlag}" @click="moreFlag = !moreFlag">
@@ -69,14 +70,14 @@
     </template>
     <template v-else>
       <!-- 搜索联想 -->
-      <div v-if="associationList.length" class="association-list">
-        <p v-for="(item, index) in associationList" :key="index" class="key-item">
+      <div v-if="associationList.length && route.name == 'search'" class="association-list">
+        <p v-for="(item, index) in associationList" :key="index" class="key-item" @click="viewDetail(item)">
           <i class="iconfont icon-sousuo" />
-          <span class="text">{{ item.keyword }}</span>
+          <span class="text" v-html="formatWord(item.keyword)" />
         </p>
       </div>
       <!-- 搜索结果 -->
-      <div class="search-result">
+      <div v-if="route.name == 'searchResult'" class="search-result">
         <div class="tab-warp">
           <Tabs
             v-model:active="curTab"
@@ -90,7 +91,9 @@
               :key="index"
               :title="item.title"
               :name="item.key"
-            />
+            >
+              <tab-list :tab="item.title" :data="tabRes" :cur-tab="curTab" />
+            </Tab>
           </Tabs>
         </div>
       </div>
@@ -99,13 +102,14 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, onMounted, reactive, nextTick } from 'vue'
+import { ref, computed, onMounted, reactive, nextTick, watch } from 'vue'
 import { Field, Swipe, SwipeItem } from 'vant'
 import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { Tab, Tabs } from 'vant'
 import api from '@/api'
 import useState from '@/utils/useState'
+import TabList from './components/tab-detail-list.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -157,8 +161,10 @@ const tabs = reactive([
   { title: '歌手', key: 100 },
   { title: '视频', key: 1014 },
   { title: 'MV', key: 1004 },
-  { title: '用户', key: 1002 },
+  { title: '用户', key: 1002 }
 ])
+
+const tabRes = ref({}) // 搜索结果
 
 const historyList = computed(() => {
   return storeState.history.value
@@ -167,6 +173,32 @@ const historyList = computed(() => {
 const placeholder = computed(() => {
   return route.query.keyword as string || ''
 })
+
+watch(() => route, (val) => {
+  const { name } = val
+  keyWord.value = name == 'search' ? '' : route.query.keyword as string
+  if (name == 'searchResult') {
+    getTabsRes(tabs[0].key)
+  }
+}, { deep: true })
+
+// 处理联想词高亮关键字
+function formatWord(str: string) {
+  const html = `<span style='color:rgba(0,0,0,.4)'>${keyWord.value}</span>`
+  return str.replace(keyWord.value, html)
+}
+
+function handleClear() {
+  if (route.name == 'searchResult') {
+    router.back()
+  }
+}
+
+// 跳转搜索结果页
+function viewDetail({ keyword }:{keyword: string}) {
+  setHistory(keyword, 'update')
+  router.push(`/searchResult?keyword=${keyword}&type=result`)
+}
 
 function tabChange(name: number) {
   getTabsRes(name)
@@ -194,13 +226,14 @@ function formatHistory(list: [] = []) {
 }
 
 async function search() {
-  getTabsRes(1)
-  await nextTick()
+  if (!keyWord.value.trim()) return
+  router.push(`/searchResult?keyword=${keyWord.value}&type=result`)
   setHistory(keyWord.value, 'update')
 }
 
 async function getTabsRes(key: number) {
-  const res = await api.cloudsearch({ keywords: '理想', type: key })
+  const res:any = await api.cloudsearch({ keywords: keyWord.value, type: key })
+  tabRes.value = res.result
 }
 
 function setHistory(data: string, type = 'update') {
@@ -406,6 +439,7 @@ onMounted(() => {
 .association-list{
   width: 100%;
   padding-left: 0.3rem;
+  box-sizing: border-box;
   .key-item{
     display: flex;
     align-items: center;
@@ -420,7 +454,7 @@ onMounted(() => {
       padding: 0.3rem 0;
       border-bottom: 1px solid rgba(0,0,0,.1);
       text-align: left;
-
+      color: #000;
     }
 
   }

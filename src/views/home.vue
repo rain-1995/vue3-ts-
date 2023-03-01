@@ -48,9 +48,7 @@
           </div>
         </List>
         <div class="bottom">
-          <!-- {{ pageConfig.nodataToast }} -->
           <div>copyright by rain.weiyu</div>
-          <!-- <div>仅供学习交流使用</div> -->
         </div>
         <!-- </list> -->
       </div>
@@ -59,7 +57,7 @@
 </template>
 
 <script lang='ts'>
-import { defineComponent, toRefs, ref, reactive, toRef, computed, onMounted, nextTick } from 'vue'
+import { defineComponent, toRefs, reactive, onMounted, nextTick } from 'vue'
 import { Swipe, SwipeItem, List } from 'vant'
 import api from '@/api'
 import scrollModel from '@/components/scrollmodel.vue'

@@ -24,6 +24,16 @@ module.exports = {
     '@typescript-eslint'
   ],
   rules: {
+    'vue/no-v-html': 'off',
+    'vue/html-self-closing': ['error', {
+      'html': {
+        'void': 'never',
+        'normal': 'always',
+        'component': 'always'
+      },
+      'svg': 'always',
+      'math': 'always'
+    }],
     '@typescript-eslint/no-non-null-assertion': 'off',
     'vue/max-attributes-per-line': [2, {
       'singleline': 10,

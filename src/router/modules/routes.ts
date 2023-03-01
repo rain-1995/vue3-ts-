@@ -90,5 +90,14 @@ export const routes : routeModel[] = [
       title: '歌曲搜索',
       fullScreen: true
     }
+  },
+  {
+    path: '/searchResult',
+    name: 'searchResult',
+    component: () => import('@/views/search/index.vue'),
+    meta: {
+      title: '搜索结果',
+      fullScreen: true
+    }
   }
 ]
