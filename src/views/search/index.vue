@@ -17,87 +17,97 @@
       </span>
       <span class="search" @click="search">搜索</span>
     </div>
-    <template v-if="!keyWord">
-      <div class="history">
-        <p class="main-title">
-          <span>搜索历史</span>
-          <i class="iconfont icon-lajixiang" @click="setHistory('', 'delete')" />
-        </p>
-        <ul v-if="historyList.length" class="word-list">
-          <li v-for="(item, index) in formatHistory(historyList)" :key="index" class="item" @click="viewDetail({keyword: item})">
-            {{ item }}
-          </li>
-          <li v-if="historyList.length > 2" class="item more" :class="{active: moreFlag}" @click="moreFlag = !moreFlag">
-            <i class="iconfont icon-xiangxiajiantou" />
-          </li>
-        </ul>
-        <div v-else class="no-data">
-          搜索历史是空的~
+    <div class="content-warp">
+      <template v-if="!keyWord">
+        <div class="history">
+          <p class="main-title">
+            <span>搜索历史</span>
+            <i class="iconfont icon-lajixiang" @click="setHistory('', 'delete')" />
+          </p>
+          <ul v-if="historyList.length" class="word-list">
+            <li v-for="(item, index) in formatHistory(historyList)" :key="index" class="item" @click="viewDetail({keyword: item})">
+              {{ item }}
+            </li>
+            <li v-if="historyList.length > 2" class="item more" :class="{active: moreFlag}" @click="moreFlag = !moreFlag">
+              <i class="iconfont icon-xiangxiajiantou" />
+            </li>
+          </ul>
+          <div v-else class="no-data">
+            搜索历史是空的~
+          </div>
         </div>
-      </div>
-      <!-- 榜单推荐 -->
-      <div class="rank-warp">
-        <Swipe
-          ref="swiperRef"
-          class="rank-swiper"
-          :lazy-render="true"
-          :show-indicators="false"
-          width="280"
-          :loop="false"
-        >
-          <SwipeItem
-            v-for="(item, index) in ranks"
-            :key="index"
-            class="swiper-item"
+        <!-- 榜单推荐 -->
+        <div class="rank-warp">
+          <Swipe
+            ref="swiperRef"
+            class="rank-swiper"
+            :lazy-render="true"
+            :show-indicators="false"
+            width="280"
+            :loop="false"
           >
-            <div class="rank-item">
-              <p class="title">
-                {{ item.title }}
-              </p>
-              <ul class="list">
-                <li v-for="(i, index) in item.data" :key="index" class="item">
-                  <span class="num">{{ i.sort }}</span>
-                  <p class="content">
-                    <span class="text">{{ i.title }}</span>
-                    <span v-if="i.hot == 1" class="hot-icon">热</span>
-                  </p>
-                </li>
-              </ul>
-            </div>
-          </SwipeItem>
-        </Swipe>
-      </div>
-    </template>
-    <template v-else>
-      <!-- 搜索联想 -->
-      <div v-if="associationList.length && route.name == 'search'" class="association-list">
-        <p v-for="(item, index) in associationList" :key="index" class="key-item" @click="viewDetail(item)">
-          <i class="iconfont icon-sousuo" />
-          <span class="text" v-html="formatWord(item.keyword)" />
-        </p>
-      </div>
-      <!-- 搜索结果 -->
-      <div v-if="route.name == 'searchResult'" class="search-result">
-        <div class="tab-warp">
-          <Tabs
-            v-model:active="curTab"
-            swipeable
-            animated
-            background="rgba(0,0,0,0)"
-            @change="tabChange"
-          >
-            <Tab
-              v-for="(item, index) in tabs"
+            <SwipeItem
+              v-for="(item, index) in ranks"
               :key="index"
-              :title="item.title"
-              :name="item.key"
+              class="swiper-item"
             >
-              <tab-list :tab="item.title" :data="tabRes" :cur-tab="curTab" />
-            </Tab>
-          </Tabs>
+              <div class="rank-item">
+                <p class="title">
+                  {{ item.title }}
+                </p>
+                <ul class="list">
+                  <li v-for="(i, index) in item.data" :key="index" class="item">
+                    <span class="num">{{ i.sort }}</span>
+                    <p class="content">
+                      <span class="text">{{ i.title }}</span>
+                      <span v-if="i.hot == 1" class="hot-icon">热</span>
+                    </p>
+                  </li>
+                </ul>
+              </div>
+            </SwipeItem>
+          </Swipe>
         </div>
-      </div>
-    </template>
+      </template>
+      <template v-else>
+        <!-- 搜索联想 -->
+        <div v-if="associationList.length && route.name == 'search'" class="association-list">
+          <p v-for="(item, index) in associationList" :key="index" class="key-item" @click="viewDetail(item)">
+            <i class="iconfont icon-sousuo" />
+            <span class="text" v-html="formatWord(item.keyword)" />
+          </p>
+        </div>
+        <!-- 搜索结果 -->
+        <div v-if="route.name == 'searchResult'" class="search-result">
+          <div class="tab-warp">
+            <Tabs
+              v-model:active="curTab"
+              background="#f6f8f9"
+              sticky
+              animated
+              offset-top="1.24rem"
+              @change="tabChange"
+            >
+              <Tab
+                v-for="(item, index) in tabs"
+                :key="index"
+                :title="item.title"
+                :name="item.key"
+              >
+                <tab-list 
+                  :tab="item.title" 
+                  :data="tabRes" 
+                  :cur-tab="curTab" 
+                  :loading="loading"
+                  :finished="finished"
+                  @load-more="loadMore"
+                />
+              </Tab>
+            </Tabs>
+          </div>
+        </div>
+      </template>
+    </div>
   </div>
 </template>
 
@@ -155,6 +165,16 @@ const associationList = ref([] as associationType[]) // 搜索关键字联想结
 
 const curTab = ref(1) // 选中的tab
 
+const loading = ref(false)
+
+const finished = ref(false)
+
+const tabRes = ref([] as any[]) // 搜索结果
+
+const page = ref(1)
+
+const limit = ref(30)
+
 const tabs = reactive([
   { title: '单曲', key: 1 },
   { title: '歌单', key: 1000 },
@@ -163,8 +183,6 @@ const tabs = reactive([
   { title: 'MV', key: 1004 },
   { title: '用户', key: 1002 }
 ])
-
-const tabRes = ref({}) // 搜索结果
 
 const historyList = computed(() => {
   return storeState.history.value
@@ -178,9 +196,15 @@ watch(() => route, (val) => {
   const { name } = val
   keyWord.value = name == 'search' ? '' : route.query.keyword as string
   if (name == 'searchResult') {
+    page.value = 1
+    tabRes.value = []
     getTabsRes(tabs[0].key)
   }
-}, { deep: true })
+  if (name == 'search') {
+    getHotSearch()
+    getHotTopic()
+  }
+}, { deep: true, immediate: true })
 
 // 处理联想词高亮关键字
 function formatWord(str: string) {
@@ -200,7 +224,10 @@ function viewDetail({ keyword }:{keyword: string}) {
   router.push(`/searchResult?keyword=${keyword}&type=result`)
 }
 
-function tabChange(name: number) {
+async function tabChange(name: number) {
+  tabRes.value = []
+  page.value = 1
+  await nextTick()
   getTabsRes(name)
 }
 
@@ -231,9 +258,28 @@ async function search() {
   setHistory(keyWord.value, 'update')
 }
 
+// 获取tab下的数据
 async function getTabsRes(key: number) {
-  const res:any = await api.cloudsearch({ keywords: keyWord.value, type: key })
-  tabRes.value = res.result
+  loading.value = true
+  const params = {
+    keywords: keyWord.value,
+    type: key,
+    limit: limit.value,
+    offset: (page.value - 1) * 30
+  }
+  const res:any = await api.cloudsearch({ ...params })
+  const { playlists = [], videos = [], artists = [], mvs = [], userprofiles = [], songs = [] } = res.result
+  const list = [...playlists, ...videos, ...artists, ...mvs, ...userprofiles, ...songs]
+  tabRes.value = tabRes.value.concat(list)
+  await nextTick()
+  loading.value = false
+  finished.value = list.length < limit.value
+}
+
+// 加载下一页
+function loadMore() {
+  page.value++
+  getTabsRes(curTab.value)
 }
 
 function setHistory(data: string, type = 'update') {
@@ -285,10 +331,6 @@ async function getHotTopic() {
   ranks.value['hotTopic'].data = format
 }
 
-onMounted(() => {
-  getHotSearch()
-  getHotTopic()
-})
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
@@ -299,7 +341,7 @@ onMounted(() => {
   min-height: 100vh;
 }
 .header{
-  position: sticky;
+  position: fixed;
   top:0;
   left:0;
   z-index: 10;
@@ -308,6 +350,7 @@ onMounted(() => {
   align-items: center;
   padding: 0.2rem 0.3rem 0.2rem;
   box-sizing: border-box;
+  width: 100%;
   i{
     font-size: 0.4rem;
     margin-right: 0.2rem;
@@ -337,6 +380,9 @@ onMounted(() => {
     font-size: 0.3rem;
   }
 
+}
+.content-warp{
+  margin-top: 1.24rem;
 }
 .rank-warp{
   margin-bottom: .3rem;
@@ -452,7 +498,7 @@ onMounted(() => {
     .text{
       flex: 1;
       padding: 0.3rem 0;
-      border-bottom: 1px solid rgba(0,0,0,.1);
+      border-bottom: .5px solid rgba(0,0,0,.1);
       text-align: left;
       color: #000;
     }

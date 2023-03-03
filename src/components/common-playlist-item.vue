@@ -3,17 +3,16 @@
 */
 <template>
   <li 
-    v-for="(item, index) in list" 
-    :key="index" 
-    class="song-item" 
-    @click="playListDetail(item)"
+    class="sheet-item" 
+    @click="playListDetail()"
   >
-    <img :src="item?.coverImgUrl" alt="" class="cover">
+    <img :src="data?.coverImgUrl" alt="" class="cover">
     <div class="song-info">
-      <span class="song-title">{{ item?.name }}</span>
+      <span class="song-title">{{ data?.name }}</span>
       <p class="sub-info">
-        <span>{{ item?.trackCount }}首</span>
-        <span v-if="showAuthor" class="author">，by{{ item?.creator?.nickname }}</span>
+        <span>{{ data?.trackCount }}首</span>
+        <span v-if="showAuthor" class="author">，by{{ data?.creator?.nickname }}</span>
+        <span v-if="showPlayCount && data.playCount" class="play-count">，播放{{ util.formatCount(data?.playCount || 0, 1) }}次</span>
       </p>
     </div>
   </li>
@@ -22,36 +21,42 @@
 <script lang="ts" setup>
 import { withDefaults, defineProps } from 'vue'
 import { useRouter } from 'vue-router'
+import util from '@/utils/index'
 interface propsType { // props类型
   showAuthor: boolean,
-  list: playListItemType[]
+  data: playListItemType,
+  showPlayCount: boolean
 }
 
-interface playListItemType { // 歌曲类型接口定义
-  name: string,
-  coverImgUrl: string,
-  trackCount: number | string,
-  creator: {nickname:string},
-  id: number
+type playListItemType = { // 歌曲类型接口定义
+  name?: string,
+  coverImgUrl?: string,
+  trackCount?: number | string,
+  creator?: {nickname:string},
+  id?: number,
+  playCount?: number
 }
 
 const router = useRouter()
 
 const props = withDefaults(defineProps<propsType>(), {
-  showAuthor: false,
-  list: () => ([])
+  showAuthor: false, // 是否显示作者
+  data: () => ({}),
+  showPlayCount: false // 是否显示播放量
 })
 
-function playListDetail(data: {id:number}) {
-  router.push(`/songSheet/${data.id}`)
+function playListDetail() {
+  router.push(`/songSheet/${props.data.id}`)
 }
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
-.song-item{
+.sheet-item{
   display: flex;
   align-items: center;
   margin-bottom: 0.4rem;
+  padding: 0 0.3rem;
+  box-sizing: border-box;
   &:last-child{
     margin-bottom: 0;
   }
