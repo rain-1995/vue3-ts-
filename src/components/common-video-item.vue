@@ -4,20 +4,20 @@
 <template>
   <div class="video-item">
     <div class="left-cover">
-      <img class="cover" :src="data.coverUrl" alt="">
-      <span v-if="(data.playTime || 0) > 100 * 10000" class="tag">百万播放</span>
-      <span class="time">{{ dayjs(data.durationms).format('mm:ss') }}</span>
+      <img class="cover" :src="data.coverUrl || data.cover" alt="">
+      <span v-if="(data.playTime || data.playCount || 0) > 100 * 10000" class="tag">百万播放</span>
+      <span class="time">{{ dayjs(data.durationms || data.duration).format('mm:ss') }}</span>
     </div>
     <div class="video-info">
       <p class="title-line">
         <img v-if="data.type == 0" src="@/assets/icon/MV-icon.png" alt="" class="mv-tag">
-        <span class="title">{{ data.title }}</span>
+        <span class="title">{{ data.title || data.name }}</span>
       </p>
       <p class="name">
-        {{ formatUser(data.creator || []) }}
+        {{ formatUser(data.creator || data.artists || []) }}
       </p>
       <p class="play-count">
-        {{ util.formatCount(data.playTime || 0, 1) }}次播放
+        {{ util.formatCount(data.playTime || data.playCount || 0, 1) }}次播放
       </p>
     </div>
   </div>
@@ -38,14 +38,19 @@ type videoItemType = { // 视频类型接口定义
   playTime?: number,
   title?: string,
   durationms?:number,
-  type?: number
+  type?: number,
+  cover?: string,
+  playCount?: number,
+  duration?: number,
+  artists?: [],
+  name?: string
 }
 const props = withDefaults(defineProps<propType>(), {
   data: () => ({})
 })
 
 function formatUser(list = []) {
-  return list.length && list.map(item => item?.userName).join('/')
+  return list.length && list.map(item => item?.userName || item?.name).join('/')
 }
 </script>
 
