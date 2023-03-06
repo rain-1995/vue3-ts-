@@ -99,5 +99,14 @@ export const routes : routeModel[] = [
       title: '搜索结果',
       fullScreen: true
     }
+  },
+  {
+    path: '/playVideo/:id',
+    name: 'playVideo',
+    component: () => import('@/views/video-detail/index.vue'),
+    meta: {
+      title: '视频详情',
+      fullScreen: true
+    }
   }
 ]

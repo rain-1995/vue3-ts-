@@ -25,6 +25,7 @@ import { withDefaults, defineProps, defineEmits, computed } from 'vue'
 import SongItem from '@/components/common-song-item.vue'
 import PlaySheetItem from '@/components/common-playlist-item.vue'
 import VideoItem from '@/components/common-video-item.vue'
+import UserItem from '@/components/common-user-item.vue'
 import { List } from 'vant'
 
 interface propType {
@@ -53,7 +54,9 @@ const componentsMap: any = {
   '1': SongItem, // 歌
   '1000': PlaySheetItem, // 歌单
   '1014': VideoItem, // 视频
-  '1004': VideoItem // mv
+  '1004': VideoItem, // mv
+  '100': UserItem, // 歌手
+  '1002': UserItem // 用户
 }
 </script>
 

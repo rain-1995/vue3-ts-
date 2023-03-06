@@ -2,7 +2,7 @@
     视频列表item通用组件
 */
 <template>
-  <div class="video-item">
+  <div class="video-item" @click="playDetail">
     <div class="left-cover">
       <img class="cover" :src="data.coverUrl || data.cover" alt="">
       <span v-if="(data.playTime || data.playCount || 0) > 100 * 10000" class="tag">百万播放</span>
@@ -27,6 +27,7 @@
 import { withDefaults, defineProps } from 'vue'
 import dayjs from 'dayjs'
 import util from '@/utils'
+import api from '@/api'
 interface propType {
     data: videoItemType,
 }
@@ -51,6 +52,12 @@ const props = withDefaults(defineProps<propType>(), {
 
 function formatUser(list = []) {
   return list.length && list.map(item => item?.userName || item?.name).join('/')
+}
+
+async function playDetail(){
+  await api.videoDetail({id: '10866250'})
+  await api.videoUrl({id: 'A3C1BEF991C6299FE1492AED832BB9F0'})
+  await api.videoInfo({vid: 'A3C1BEF991C6299FE1492AED832BB9F0'})
 }
 </script>
 
@@ -96,6 +103,7 @@ function formatUser(list = []) {
     margin-left: 0.2rem;
     font-size: 0.24rem;
     flex: 1;
+    min-width: 0;
     .title-line{
       font-size: 0.28rem;
       display: inline-flex;
@@ -121,6 +129,9 @@ function formatUser(list = []) {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      width: 100%;
+      text-align: left;
+      
     }
     .name,.play-count{
       color: rgba(0,0,0,.7);

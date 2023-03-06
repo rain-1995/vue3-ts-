@@ -71,4 +71,9 @@ export default {
   suggest: (data:object) => http('get', '/search/suggest', data),
   multimatch: (data:object) => http('get', '/search/multimatch', data),
   cloudsearch: (data:object) => http('get', '/cloudsearch', data),
+  // 关注取消关注用户
+  follow: (data:object) => http('post', '/follow', data, { message: false }),
+  videoDetail: (data:object) => http('post', '/video/detail', data),
+  videoUrl: (data:object) => http('post', '/video/url', data),
+  videoInfo: (data:object) => http('post', '/video/detail/info', data),
 }
