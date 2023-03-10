@@ -28,6 +28,7 @@ import { withDefaults, defineProps } from 'vue'
 import dayjs from 'dayjs'
 import util from '@/utils'
 import api from '@/api'
+import { useRouter } from 'vue-router'
 interface propType {
     data: videoItemType,
 }
@@ -44,8 +45,12 @@ type videoItemType = { // 视频类型接口定义
   playCount?: number,
   duration?: number,
   artists?: [],
-  name?: string
+  name?: string,
+  id?: number,
 }
+
+const router = useRouter()
+
 const props = withDefaults(defineProps<propType>(), {
   data: () => ({})
 })
@@ -54,10 +59,9 @@ function formatUser(list = []) {
   return list.length && list.map(item => item?.userName || item?.name).join('/')
 }
 
-async function playDetail(){
-  await api.videoDetail({id: '10866250'})
-  await api.videoUrl({id: 'A3C1BEF991C6299FE1492AED832BB9F0'})
-  await api.videoInfo({vid: 'A3C1BEF991C6299FE1492AED832BB9F0'})
+async function playDetail() {
+  const type = props?.data?.type == 1 ? 'video' : 'mv'
+  router.push(`/playVideo/${props.data.id || props.data.vid}?type=${type}`)
 }
 </script>
 

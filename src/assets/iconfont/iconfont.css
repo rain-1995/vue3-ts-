@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 3857020 */
-  src: url('iconfont.woff2?t=1678070956107') format('woff2'),
-       url('iconfont.woff?t=1678070956107') format('woff'),
-       url('iconfont.ttf?t=1678070956107') format('truetype');
+  src: url('iconfont.woff2?t=1678412549540') format('woff2'),
+       url('iconfont.woff?t=1678412549540') format('woff'),
+       url('iconfont.ttf?t=1678412549540') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,50 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-zantongfill:before {
+  content: "\e793";
+}
+
+.icon-fenxiang:before {
+  content: "\e633";
+}
+
+.icon-xinjiantianjiabiaodanyemian:before {
+  content: "\e7aa";
+}
+
+.icon-bofang:before {
+  content: "\e60e";
+}
+
+.icon-zan:before {
+  content: "\e870";
+}
+
+.icon-pinglun-tianchong:before {
+  content: "\e7f6";
+}
+
+.icon-fenxiang1:before {
+  content: "\e72f";
+}
+
+.icon-tianjiaxindefenqu:before {
+  content: "\e627";
+}
+
+.icon-pinglun-:before {
+  content: "\e60a";
+}
+
+.icon-pinglun1:before {
+  content: "\e6b7";
+}
+
+.icon-pinglun4:before {
+  content: "\e6ba";
 }
 
 .icon-duihao:before {

@@ -1,3 +1,6 @@
+/**
+ * 云音乐nodejs 接口api文档 https://binaryify.github.io/NeteaseCloudMusicApi/#/
+ */
 import http from '@/utils/request'
 export default {
   // 首页圆形图标列表
@@ -73,7 +76,14 @@ export default {
   cloudsearch: (data:object) => http('get', '/cloudsearch', data),
   // 关注取消关注用户
   follow: (data:object) => http('post', '/follow', data, { message: false }),
+
+  // 视频相关
   videoDetail: (data:object) => http('post', '/video/detail', data),
   videoUrl: (data:object) => http('post', '/video/url', data),
   videoInfo: (data:object) => http('post', '/video/detail/info', data),
+
+  // mv相关
+  mvDetail: (data:object) => http('post', '/mv/detail', data),
+  mvUrl: (data:object) => http('post', '/mv/url', data),
+  mvInfo: (data:object) => http('post', '/mv/detail/info', data),
 }
