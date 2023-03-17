@@ -7,6 +7,7 @@
     @close="emit('on-close', false)"
     @click-overlay="emit('on-close', false)"
   >
+    <Loading/>
     <div class="container">
       <div class="header">
         <i class="iconfont icon-jiantou" />
@@ -46,6 +47,7 @@ import { Popup } from 'vant'
 import api from '@/api'
 import { useRoute } from 'vue-router'
 import CommentItem from './comment-item.vue'
+import Loading from '@/components/loading.vue'
 
 interface propType {
   popShow?: boolean,

@@ -16,18 +16,22 @@
       </div>
     </div>
     <div class="right-icon">
+      <!-- 点赞 -->
       <li class="i-item">
         <i class="iconfont icon-zan" />
         <span class="title">{{ util.formatCount(videoCount?.likedCount || 0, 1) }}</span>
       </li>
-      <li class="i-item">
+      <!-- 评论 -->
+      <li class="i-item" @click.stop="showComment = true">
         <i class="iconfont icon-pinglun-tianchong" />
         <span class="title">{{ util.formatCount(videoCount?.commentCount || 0, 1) }}</span>
       </li>
+      <!-- 分享 -->
       <li class="i-item">
         <i class="iconfont icon-fenxiang1" />
         <span class="title">{{ util.formatCount(videoCount?.shareCount || 0, 1) }}</span>
       </li>
+      <!-- 收藏 -->
       <li class="i-item">
         <i class="iconfont icon-xinjiantianjiabiaodanyemian" />
         <span class="title">收藏</span>
@@ -69,7 +73,9 @@
     <Comment
       :pop-show="showComment"
       pop-height="70%"
+      teleport="body"
       @on-close="handleCommentClose"
+      @click.stop
     />
   </div>
 </template>
@@ -236,7 +242,7 @@ onMounted(() => {
     position: absolute;
     right: 0.3rem;
     bottom: 2rem;
-    z-index: 10;
+    z-index: 100;
     display: flex;
     flex-direction: column;
     align-items: center;
