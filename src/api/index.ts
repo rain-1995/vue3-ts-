@@ -86,4 +86,17 @@ export default {
   mvDetail: (data:object) => http('post', '/mv/detail', data),
   mvUrl: (data:object) => http('post', '/mv/url', data),
   mvInfo: (data:object) => http('post', '/mv/detail/info', data),
+
+  // 资源点赞
+  handleLike: (data:object) => http('post', '/resource/like', data),
+  // 收藏取消收藏视频
+  videoCollect: (data:object) => http('post', '/video/sub', data),
+  // 收藏取消收藏mv
+  mvCollect: (data:object) => http('post', '/mv/sub', data),
+  // 评论集合接口
+  videoComment: (data:object) => http('post', '/comment/new', data),
+  // mv评论
+  // mvComment: (data:object) => http('post', '/comment/mv', data),
+  // 评论点赞
+  commentLike: (data:object) => http('post', '/comment/like', data),
 }

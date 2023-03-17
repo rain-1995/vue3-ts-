@@ -18,15 +18,15 @@
     <div class="right-icon">
       <li class="i-item">
         <i class="iconfont icon-zan" />
-        <span class="title">123</span>
+        <span class="title">{{ util.formatCount(videoCount?.likedCount || 0, 1) }}</span>
       </li>
       <li class="i-item">
         <i class="iconfont icon-pinglun-tianchong" />
-        <span class="title">123</span>
+        <span class="title">{{ util.formatCount(videoCount?.commentCount || 0, 1) }}</span>
       </li>
       <li class="i-item">
         <i class="iconfont icon-fenxiang1" />
-        <span class="title">123</span>
+        <span class="title">{{ util.formatCount(videoCount?.shareCount || 0, 1) }}</span>
       </li>
       <li class="i-item">
         <i class="iconfont icon-xinjiantianjiabiaodanyemian" />
@@ -35,15 +35,29 @@
     </div>
     <div class="video-info">
       <div class="header">
-        <img :src="detail?.creator?.avatarUrl" alt="" class="avatar">
-        <span class="name">{{ detail?.creator?.nickname }}</span>
-        <span v-if="!detail?.creator?.followed" class="like">+</span>
+        <!-- 视频 -->
+        <template v-if="route.query.type == 'video'">
+          <img :src="detail?.creator?.avatarUrl" alt="" class="avatar">
+          <span class="name">{{ detail?.creator?.nickname }}</span>
+          <span v-if="!detail?.creator?.followed" class="like">+</span>
+        </template>
+        <!-- mv -->
+        <template v-else>
+          <img 
+            v-for="(item, index) in detail.artists || []"
+            :key="index" 
+            :src="item?.img1v1Url" 
+            class="avatar pic-item"
+            :style="{'z-index': (detail?.artists?.length || 0) - (1 + index)}"
+          >
+          <span class="name" :style="{'marginLeft': `${0.7 * (detail?.artists?.length || 0) + ((detail?.artists?.length || 0) <= 1 ? 0.2 : 0)}rem`}">{{ formatNames(detail.artists) }}</span>
+        </template>
       </div>
       <div class="title">
-        {{ detail.title || '' }}
+        {{ detail.title || detail.name || '' }}
       </div>
       <div class="desc">
-        {{ detail.description }}
+        {{ detail.description || detail.desc || '' }}
       </div>
       <div class="time">
         {{ dayjs(detail.publishTime).format('YYYY-MM-DD') }}
@@ -52,31 +66,31 @@
     <div class="back-icon" @click="back">
       <i class="iconfont icon-xitongfanhui" />
     </div>
+    <Comment
+      :pop-show="showComment"
+      pop-height="70%"
+      @on-close="handleCommentClose"
+    />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, reactive, computed } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import VideoPlayer from '@/components/video-player/index.vue'
 import api from '@/api'
 import { useRoute, useRouter } from 'vue-router'
 import dayjs from 'dayjs'
+import util from '@/utils'
+import Comment from './components/comment.vue'
 
 const route = useRoute()
 
 const router = useRouter()
 
-type dataType = {
-  title?: string,
-  creator?: {
-    avatarUrl?: string,
-    nickname?: string,
-    followed?: boolean
-  },
-  description?: string,
-  publishTime?: number,
-  width?: number,
-  height?: number
+type countType = {
+  likedCount?: number,
+  commentCount?: number,
+  shareCount?: number
 }
 
 const playerRef = ref()
@@ -85,9 +99,13 @@ const loading = ref(true) // 视频加载中
 
 const playing = ref(true) // 视频是否在播放
 
-const detail = ref({} as dataType)
+const detail = ref({} as anyObject)
 
 const videoUrl = ref('')
+
+const videoCount = ref({} as countType) // 视频点赞评论数
+
+const showComment = ref(true) // 评论显示
 
 const videoTypeFnMap = {
   'mv': () => {
@@ -105,6 +123,14 @@ const videoTypeFnMap = {
 // 返回视频是否竖屏
 const isVerticalScreen = computed(() => (detail?.value?.width || 0) < (detail?.value?.height || 0) || false)
 
+function handleCommentClose(val:boolean): void {
+  showComment.value = val
+}
+
+function formatNames(list = []) {
+  return list.length && list.map((i:anyObject) => i.name).join('/') || ''
+}
+
 function back() {
   router.back()
 }
@@ -119,24 +145,28 @@ async function getUrl() {
 }
 
 async function getVideoDetail() {
-  const { data = {}}: {data?: dataType} = await api.videoDetail({ id: route.params.id })
-  detail.value = data
+  const res: response = await api.videoDetail({ id: route.params.id })
+  detail.value = res.data
 }
 
 async function videoInfo() {
   const data = await api.videoInfo({ vid: route.params.id })
+  videoCount.value = data
 }
 
 async function mvDetail() {
-  const data = await api.mvDetail({ mvid: route.params.id })
+  const res: response = await api.mvDetail({ mvid: route.params.id })
+  detail.value = res.data
 }
 
 async function mvUrl() {
-  const data = await api.mvUrl({ id: route.params.id })
+  const res: response = await api.mvUrl({ id: route.params.id })
+  videoUrl.value = res?.data?.url || ''
 }
 
 async function mvInfo() {
   const data = await api.mvInfo({ mvid: route.params.id })
+  videoCount.value = data
 }
 
 function togglePlay() {
@@ -232,7 +262,7 @@ onMounted(() => {
     left: 0;
     bottom: 1.6rem;
     width: 100%;
-    z-index: 1;
+    z-index: 10;
     color: rgba(255,255,255,.9);
     display: flex;
     align-items: flex-start;
@@ -246,6 +276,8 @@ onMounted(() => {
       align-items: center;
       margin-bottom: 0.3rem;
       width: 100%;
+      position: relative;
+      height: .7rem;
       .name{
         margin: 0 0.2rem;
         font-weight: 500;
@@ -268,6 +300,12 @@ onMounted(() => {
         color: #fff;
         font-size: 0.28rem;
         background-color: red;
+      }
+      .pic-item{
+        position: absolute;
+        &:not(:first-child){
+          left: 7%;
+        }
       }
     }
     .desc,.title{

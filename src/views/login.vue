@@ -7,8 +7,8 @@
     <div class="icon">
       <img src="@/assets/icon/logo.png" alt="">
     </div>
-    <div class="button" @click="login = true">
-      手机号登录
+    <div class="button" @click="login = false">
+      手机号登录（暂不可用）
     </div>
     <div class="button qr-btn" @click="getQrKey()">
       扫码登录
