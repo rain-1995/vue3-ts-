@@ -4,34 +4,42 @@
       v-for="(item, index) in lines" 
       :key="index" 
       class="line" 
-      :style="{'--self-height': `${item.baseHeight*2/100}rem`, '--delay': index+1}"
+      :style="{'--self-height': `${item.baseHeight}px`, '--delay': index + 1}"
     />
+    <div v-if="text" class="text">
+      {{ text }}
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, toRefs, ref, reactive, toRef, computed, onMounted, withDefaults, defineProps } from 'vue'
+import { computed, withDefaults, defineProps } from 'vue'
 
 interface propType {
   lineNum: number,
   lineWidth: number,
   baseHeight: number,
-  lineColor: string
+  lineColor: string,
+  animationTime: number,
+  text: string,
+  textColor: string
 }
 
 const props = withDefaults(defineProps<propType>(), {
-  lineNum: 4,
-  lineWidth: 3,
-  baseHeight: 50,
-  lineColor: 'red'
+  lineNum: 4, // 线条数量
+  lineWidth: 3, // 线条宽度
+  baseHeight: 15, // 线条基础高度
+  lineColor: 'red', // 线条颜色
+  animationTime: 0.5, // 动画一次完成的时间 单位秒
+  text: '',
+  textColor: '#000'
 })
 
 const lines = computed(() => {
   let temp = [] as object[]
-  for (let i = 0; i <= props.lineNum; i++) {
+  for (let i = 0; i < props.lineNum; i++) {
     const line = {
       baseHeight: props.baseHeight + i * String(props.lineNum).length
-
     }
     temp = [...temp, line]
   }
@@ -46,30 +54,33 @@ const lines = computed(() => {
   position: relative;
   width: 100%;
   height: 0.4rem;
-
 }
 .line{
-  --time: calc(var(--delay) * 200ms);
-  width: v-bind('lineWidth * 2 / 100 + "rem"');
-  height: var(--self-height);
+  --time: calc(var(--delay) * 200ms); // 动画延迟时间
+  width: v-bind('lineWidth + "px"');
+  height: calc(var(--self-height));
   background-color: v-bind(lineColor);
-  margin-right: 4px;
+  margin-right: 3px;
   animation-name: load;
-  animation-duration: 1s;
+  animation-duration: v-bind('animationTime + "s"');
   animation-iteration-count: infinite;
   animation-fill-mode: both;
   animation-delay:  var(--time);
   animation-timing-function: ease;
   border-radius: 0.06rem;
-}
-@keyframes load {
-  0%,
-  100% {
-    height: var(--self-height);
+  @keyframes load {
+    0%,
+    100% {
+      height: var(--self-height);
+    }
+    50%{
+      height: calc(var(--self-height) / 2 / var(--delay));
+    }
   }
-  50%{
-    height: calc(100% - (var(--self-height)/2) );
-  }
 }
- 
+.text{
+  font-size: 0.2rem;
+  color: v-bind(textColor);
+  margin-left: 0.12rem;
+}
 </style>
