@@ -27,12 +27,12 @@ interface propType {
 
 const props = withDefaults(defineProps<propType>(), {
   lineNum: 4, // 线条数量
-  lineWidth: 3, // 线条宽度
-  baseHeight: 15, // 线条基础高度
+  lineWidth: 2, // 线条宽度
+  baseHeight: 10, // 线条基础高度
   lineColor: 'red', // 线条颜色
   animationTime: 0.5, // 动画一次完成的时间 单位秒
-  text: '',
-  textColor: '#000'
+  text: '', // 文本
+  textColor: '#000' // 文本颜色
 })
 
 const lines = computed(() => {
@@ -52,8 +52,8 @@ const lines = computed(() => {
   display: flex;
   align-items: flex-end;
   position: relative;
-  width: 100%;
   height: 0.4rem;
+  text-align: center;
 }
 .line{
   --time: calc(var(--delay) * 200ms); // 动画延迟时间

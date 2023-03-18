@@ -7,43 +7,57 @@
     @close="emit('on-close', false)"
     @click-overlay="emit('on-close', false)"
   >
-    <Loading/>
     <div class="container">
       <div class="header">
         <i class="iconfont icon-jiantou" />
-        <div class="comment-header">
-          <span class="title">评论({{comments.totalCount}})</span>
+        <div v-if="commentType == 'comment'" class="comment-header">
+          <span class="title">评论({{ commentDetail?.totalCount || 0 }})</span>
           <ul class="tabs">
             <li
               v-for="(item, index) in tabs" 
               :key="index"
               class="tab"
-              :class="{active: item.key == commentTab}"
+              :class="{active: item.key == sortType}"
               @click="tabChange(item.key)"
             >
               {{ item.name }}
             </li>
           </ul>
         </div>
-      <!-- <div class="reply-header">
-        <i class="iconfont icon-xitongfanhui"></i>
-        <span class="title">回复(123)</span>
-      </div> -->
+        <div v-else class="reply-header">
+          <i class="iconfont icon-xitongfanhui" />
+          <span class="title">回复(123)</span>
+        </div>
       </div>
-      <div class="list">
-        <CommentItem
-          v-for="(item, index) in comments.comments"
-          :key="index"
-          :data="item"
+      <div v-if="loading && page == 1" class="loading-status">
+        <Loading 
+          text="正在加载..."
+          text-color="rgba(0,0,0,.7)"
+          :line-width="2"
+          :base-height="10"
         />
+      </div>
+      <div v-if="comments.length" class="list">
+        <List
+          v-model:loading="loading"
+          :finished="finished"
+          finished-text="没有更多了"
+          @load="loadMore"
+        >
+          <CommentItem
+            v-for="(item, index) in comments"
+            :key="index"
+            :data="item"
+          />
+        </List>
       </div>
     </div>
   </Popup>
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, toRefs, ref, defineEmits, watch, reactive, toRef, computed, onMounted, withDefaults, defineProps } from 'vue'
-import { Popup } from 'vant'
+import { ref, defineEmits, watch, reactive, computed, withDefaults, defineProps } from 'vue'
+import { Popup, List } from 'vant'
 import api from '@/api'
 import { useRoute } from 'vue-router'
 import CommentItem from './comment-item.vue'
@@ -72,9 +86,9 @@ const page = ref(1)
 
 const sortType = ref(1)
 
-const commentTab = ref(1)
+const commentDetail = ref<any>({})
 
-const comments = ref({})
+const comments = ref([])
 
 const commentType = ref('comment')
 
@@ -84,26 +98,47 @@ const tabs = reactive([
   { name: '最新', key: 3 }
 ])
 
+const loading = ref(true)
+
+const finished = ref(false)
+
 const show = computed(() => props.popShow)
 
 watch(() => props.popShow, (val) => {
   val && commentList()
 }, { immediate: true })
 
+function loadMore() {
+  page.value++
+  commentList()
+}
+
 async function commentList() {
+  if (page.value != 1) {
+    loading.value = true
+  }
   const params = {
     id: route.params.id,
     type: commentTypeMap[route.query.type as keyof typeof commentTypeMap],
     sortType: sortType.value,
     pageNo: page.value,
-    cursor: ''
+    cursor: '',
+    pageSize: 20
   }
   const res: response = await api.videoComment({ ...params })
-  comments.value = res.data
+  const { comments: list = [] } = res.data
+  commentDetail.value = res.data
+  comments.value = [...comments.value, ...list]
+  finished.value = !res.data.hasMore
+  loading.value = false
 }
 
 function tabChange(tab: number): void {
-  commentTab.value = tab
+  loading.value = true
+  sortType.value = tab
+  comments.value = []
+  page.value = 1
+  commentList()
 }
 </script>
 
@@ -150,6 +185,13 @@ function tabChange(tab: number): void {
 .list{
   flex: 1;
   overflow: auto;
+}
+.loading-status{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 0.4rem;
+
 }
 </style>
 
