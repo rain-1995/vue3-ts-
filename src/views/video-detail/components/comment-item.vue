@@ -1,24 +1,24 @@
 <template>
   <div class="comment-item">
-    <img :src="data.user.avatarUrl" alt="" class="avatar">
+    <img :src="data?.user?.avatarUrl" alt="" class="avatar">
     <div class="flex-right">
       <div class="header-name">
         <p class="name-time">
-          <span class="name">{{ data.user.nickname }}</span>
-          <span class="time">{{ data.timeStr }}</span>
+          <span class="name">{{ data?.user?.nickname }}</span>
+          <span class="time">{{ data?.timeStr }}</span>
         </p>
         <p class="star">
-          {{ data.likedCount }}<i class="iconfont icon-zan1" />
+          {{ data?.likedCount }}<i class="iconfont icon-zan1" />
         </p>
       </div>
       <div class="content">
-        {{ data.content }}
+        {{ data?.content }}
       </div>
-      <div v-if="reply.showReplyCount" class="reply-view">
-        <span class="name">{{ replyComment.user.nickname }}：</span>
-        <span class="reply-content">{{ replyComment.content }}</span>
-        <p class="reply-count">
-          {{ reply.replyCount }}条回复<span class="arrow"><i class="iconfont icon-xiangxiajiantou" /></span>
+      <div v-if="reply?.showReplyCount && showReply" class="reply-view">
+        <span v-if="replyComment?.user?.nickname" class="name">{{ replyComment?.user?.nickname }}：</span>
+        <span v-if="replyComment?.content" class="reply-content">{{ replyComment?.content }}</span>
+        <p class="reply-count" @click="emit('view-reply')">
+          {{ reply?.replyCount }}条回复<span class="arrow"><i class="iconfont icon-xiangxiajiantou" /></span>
         </p>
       </div>
     </div>
@@ -26,15 +26,19 @@
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, toRefs, ref, reactive, toRef, computed, onMounted, withDefaults, defineProps } from 'vue'
+import { computed, withDefaults, defineProps, defineEmits } from 'vue'
 
 interface propType {
-  data: object
+  data: anyObject,
+  showReply: boolean
 }
 
 const props = withDefaults(defineProps<propType>(), {
-  data: () => ({})
+  data: () => ({}),
+  showReply: true
 })
+
+const emit = defineEmits(['view-reply'])
 
 const reply = computed(() => {
   const { showFloorComment = {}} = props.data
@@ -43,7 +47,7 @@ const reply = computed(() => {
 
 const replyComment = computed(() => {
   const { comments = [] } = reply.value
-  return comments.length && comments[0]
+  return comments?.length && comments[0] || {}
 })
 
 </script>
@@ -67,12 +71,16 @@ const replyComment = computed(() => {
     text-align: left;
     padding-bottom: 0.3rem;
     border-bottom: 1px solid rgba(0,0,0,.1);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
     .header-name{
       width: 100%;
       display: inline-flex;
       align-items: center;
       justify-content: space-between;
       font-size: 0.28rem;
+      margin-top: 0.12rem;
       .name-time{
         display: inline-flex;
         flex-direction: column;

@@ -1,6 +1,6 @@
 <template>
   <div class="load-warp">
-    <li 
+    <div 
       v-for="(item, index) in lines" 
       :key="index" 
       class="line" 
@@ -36,7 +36,7 @@ const props = withDefaults(defineProps<propType>(), {
 })
 
 const lines = computed(() => {
-  let temp = [] as object[]
+  let temp = [] as any[]
   for (let i = 0; i < props.lineNum; i++) {
     const line = {
       baseHeight: props.baseHeight + i * String(props.lineNum).length
@@ -57,7 +57,7 @@ const lines = computed(() => {
 }
 .line{
   --time: calc(var(--delay) * 200ms); // 动画延迟时间
-  width: v-bind('lineWidth + "px"');
+  width: v-bind('lineWidth * 2 / 100 + "rem"');
   height: calc(var(--self-height));
   background-color: v-bind(lineColor);
   margin-right: 3px;

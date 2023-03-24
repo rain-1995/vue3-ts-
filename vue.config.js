@@ -3,7 +3,7 @@ function resolve(dir) {
   return path.join(__dirname, '/', dir)
 }
 module.exports = {
-  publicPath: './',
+  publicPath: '/',
   chainWebpack: config => {
     config.module
       .rule('svg')
@@ -20,5 +20,11 @@ module.exports = {
       .options({
         symbolId: 'icon-[name]'
       })
+  },
+  devServer: {
+    // contentBase: 'localhost',
+    // open: false,
+    // hot: true,
+    port: 5000
   }
 }

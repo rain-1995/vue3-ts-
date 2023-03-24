@@ -114,12 +114,13 @@
 <script lang="ts" setup>
 import { ref, computed, onMounted, reactive, nextTick, watch } from 'vue'
 import { Field, Swipe, SwipeItem } from 'vant'
-import { useRoute, useRouter } from 'vue-router'
+import { LocationQueryRaw, LocationQueryValue, useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { Tab, Tabs } from 'vant'
 import api from '@/api'
 import useState from '@/utils/useState'
 import TabList from './components/tab-detail-list.vue'
+import qs from 'qs'
 
 const route = useRoute()
 const router = useRouter()
@@ -163,7 +164,7 @@ interface associationType {
 
 const associationList = ref([] as associationType[]) // 搜索关键字联想结果
 
-const curTab = ref(1) // 选中的tab
+const curTab = ref<number | string>(1) // 选中的tab
 
 const loading = ref(false)
 
@@ -192,13 +193,15 @@ const placeholder = computed(() => {
   return route.query.keyword as string || ''
 })
 
-watch(() => route, (val) => {
+watch(() => route, async(val) => {
   const { name } = val
   keyWord.value = name == 'search' ? '' : route.query.keyword as string
   if (name == 'searchResult') {
     page.value = 1
     tabRes.value = []
-    getTabsRes(tabs[0].key)
+    await nextTick()
+    curTab.value = Number(route.query.tab) || curTab.value
+    getTabsRes(curTab.value)
   }
   if (name == 'search') {
     getHotSearch()
@@ -224,9 +227,16 @@ function viewDetail({ keyword }:{keyword: string}) {
   router.push(`/searchResult?keyword=${keyword}&type=result`)
 }
 
-async function tabChange(name: number) {
+async function tabChange(name: number | string) {
   tabRes.value = []
   page.value = 1
+  let query = qs.parse(qs.stringify(route.query)) as LocationQueryRaw
+  query = {
+    ...query,
+    tab: name as string
+  }
+  await nextTick()
+  router.replace({ path: '/searchResult', query })
   await nextTick()
   getTabsRes(name)
 }
@@ -259,7 +269,7 @@ async function search() {
 }
 
 // 获取tab下的数据
-async function getTabsRes(key: number) {
+async function getTabsRes(key: number | string) {
   loading.value = true
   const params = {
     keywords: keyWord.value,

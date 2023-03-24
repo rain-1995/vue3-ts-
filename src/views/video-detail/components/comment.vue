@@ -9,7 +9,7 @@
   >
     <div class="container">
       <div class="header">
-        <i class="iconfont icon-jiantou" />
+        <i class="iconfont icon-jiantou" @click="emit('on-close', false)" />
         <div v-if="commentType == 'comment'" class="comment-header">
           <span class="title">评论({{ commentDetail?.totalCount || 0 }})</span>
           <ul class="tabs">
@@ -33,11 +33,11 @@
         <Loading 
           text="正在加载..."
           text-color="rgba(0,0,0,.7)"
-          :line-width="2"
+          :line-width="1"
           :base-height="10"
         />
       </div>
-      <div v-if="comments.length" class="list">
+      <div v-if="comments.length && commentType == 'comment'" class="list">
         <List
           v-model:loading="loading"
           :finished="finished"
@@ -48,9 +48,16 @@
             v-for="(item, index) in comments"
             :key="index"
             :data="item"
+            @view-reply="() => (currentComment = item, commentType = 'reply')"
           />
         </List>
       </div>
+      <template v-if="commentType == 'reply'">
+        <Reply
+          :id="currentComment.commentId"
+          :comment="currentComment"
+        />
+      </template>
     </div>
   </Popup>
 </template>
@@ -62,6 +69,7 @@ import api from '@/api'
 import { useRoute } from 'vue-router'
 import CommentItem from './comment-item.vue'
 import Loading from '@/components/loading.vue'
+import Reply from './reply.vue'
 
 interface propType {
   popShow?: boolean,
@@ -90,6 +98,8 @@ const commentDetail = ref<any>({})
 
 const comments = ref([])
 
+const currentComment = ref({} as anyObject)
+
 const commentType = ref('comment')
 
 const tabs = reactive([
@@ -105,6 +115,10 @@ const finished = ref(false)
 const show = computed(() => props.popShow)
 
 watch(() => props.popShow, (val) => {
+  comments.value = []
+  page.value = 1
+  loading.value = true
+  sortType.value = 1
   val && commentList()
 }, { immediate: true })
 
@@ -122,7 +136,7 @@ async function commentList() {
     type: commentTypeMap[route.query.type as keyof typeof commentTypeMap],
     sortType: sortType.value,
     pageNo: page.value,
-    cursor: '',
+    cursor: sortType.value == 3 ? commentDetail.value?.cursor : '',
     pageSize: 20
   }
   const res: response = await api.videoComment({ ...params })
@@ -161,6 +175,14 @@ function tabChange(tab: number): void {
     display: flex;
     align-items: center;
     justify-content: space-between;
+  }
+  .reply-header{
+    justify-content: flex-start;
+    font-size: .32rem;
+    i{
+      font-size: 0.32rem;
+      margin-right: .3rem;
+    }
   }
   .tabs{
     display: inline-flex;

@@ -95,6 +95,8 @@ export default {
   mvCollect: (data:object) => http('post', '/mv/sub', data),
   // 评论集合接口
   videoComment: (data:object) => http('post', '/comment/new', data),
+  // 回复
+  reply: (data:object) => http('post', '/comment/floor', data),
   // mv评论
   // mvComment: (data:object) => http('post', '/comment/mv', data),
   // 评论点赞

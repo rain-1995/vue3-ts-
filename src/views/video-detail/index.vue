@@ -1,5 +1,5 @@
 <template>
-  <div class="video-detail" :class="{mask: !playing}" @click="togglePlay">
+  <div v-show="!loading" class="video-detail" :class="{mask: !playing}" @click="togglePlay">
     <div class="video-warp" :class="{full: isVerticalScreen}">
       <VideoPlayer
         ref="playerRef"
@@ -12,7 +12,7 @@
         @on-canplay="handleCanplay"
       />
       <div class="controls-icon">
-        <span v-show="!playing && !loading" class="play" @click="handlePlay"><i class="iconfont icon-bofang" /></span>
+        <span v-show="!playing && !loading" class="play" @click.stop="handlePlay"><i class="iconfont icon-bofang" /></span>
       </div>
     </div>
     <div class="right-icon">
@@ -67,7 +67,7 @@
         {{ dayjs(detail.publishTime).format('YYYY-MM-DD') }}
       </div>
     </div>
-    <div class="back-icon" @click="back">
+    <div class="back-icon" @click.stop="back">
       <i class="iconfont icon-xitongfanhui" />
     </div>
     <Comment
@@ -76,6 +76,14 @@
       teleport="body"
       @on-close="handleCommentClose"
       @click.stop
+    />
+  </div>
+  <div v-show="loading" class="loading-status">
+    <Loading 
+      text="正在加载..."
+      text-color="rgba(255,255,255,.7)"
+      :line-width="1"
+      :base-height="10"
     />
   </div>
 </template>
@@ -88,6 +96,7 @@ import { useRoute, useRouter } from 'vue-router'
 import dayjs from 'dayjs'
 import util from '@/utils'
 import Comment from './components/comment.vue'
+import Loading from '@/components/loading.vue'
 
 const route = useRoute()
 
@@ -111,7 +120,7 @@ const videoUrl = ref('')
 
 const videoCount = ref({} as countType) // 视频点赞评论数
 
-const showComment = ref(true) // 评论显示
+const showComment = ref(false) // 评论显示
 
 const videoTypeFnMap = {
   'mv': () => {
@@ -183,12 +192,12 @@ function togglePlay() {
 function handlePlay() {
   playing.value = true
   loading.value = false
-  playerRef.value.play()
+  playerRef.value && playerRef.value.play()
 }
 
 function handlePause() {
   playing.value = false
-  playerRef.value.pause()
+  playerRef.value && playerRef.value.pause()
 }
 
 function handleWait() {
@@ -214,7 +223,9 @@ onMounted(() => {
   width:100%;
   height: 100%;
   background-color: #000;
-  position: relative;
+  position: absolute;
+  left: 0;
+  top: 0;
   .video-warp{
     width: 100%;
     height: 4rem;
@@ -348,6 +359,20 @@ onMounted(() => {
   top:0;
   background-color: rgba(0,0,0,.1);
   z-index: 1;
+}
+.loading-status{
+  width: 100%;
+  height: 100%;
+  background-color: #000;
+  position: absolute;
+  left: 0;
+  top: 0;
+  .load-warp{
+    position: absolute;
+    left: 50%;
+    top: 4rem;
+    transform: translate(-50%,0);
+  }
 }
  
 </style>
