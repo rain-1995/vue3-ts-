@@ -16,6 +16,8 @@
           v-for="(item, index) in reply"
           :key="index"
           :data="item"
+          :be-reply-id="comment?.commentId"
+          :show-be-reply="true"
         />
       </List>
     </div>

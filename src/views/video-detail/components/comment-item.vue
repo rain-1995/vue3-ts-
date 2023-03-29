@@ -21,6 +21,17 @@
           {{ reply?.replyCount }}条回复<span class="arrow"><i class="iconfont icon-xiangxiajiantou" /></span>
         </p>
       </div>
+      <!-- 回复评论的被回复人 -->
+      <div v-if="showBeReply" class="be-reply">
+        <template v-for="(item, index) in beBeReplyUser" :key="index">
+          <div v-if="item.beRepliedCommentId != beReplyId" class="reply-view be-reply-user-item">
+            <p>
+              <span class="name">{{ item?.user?.nickname }}：</span>
+              <span class="reply-content">{{ item?.content }}</span>
+            </p>
+          </div>
+        </template>
+      </div>
     </div>
   </div>
 </template>
@@ -30,12 +41,16 @@ import { computed, withDefaults, defineProps, defineEmits } from 'vue'
 
 interface propType {
   data: anyObject,
-  showReply: boolean
+  showReply: boolean,
+  beReplyId: number,
+  showBeReply: boolean
 }
 
 const props = withDefaults(defineProps<propType>(), {
   data: () => ({}),
-  showReply: true
+  showReply: true,
+  beReplyId: 0,
+  showBeReply: false
 })
 
 const emit = defineEmits(['view-reply'])
@@ -43,6 +58,11 @@ const emit = defineEmits(['view-reply'])
 const reply = computed(() => {
   const { showFloorComment = {}} = props.data
   return showFloorComment
+})
+
+const beBeReplyUser = computed(() => {
+  const { beReplied = [] } = props.data
+  return beReplied
 })
 
 const replyComment = computed(() => {
@@ -136,6 +156,31 @@ const replyComment = computed(() => {
     i{
       font-size: .24rem;
     }
+  }
+}
+.be-reply{
+  margin-top: 0.08rem;
+}
+.be-reply-user-item{
+  background-color: #fff;
+  padding: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  min-height: 0;
+  position: relative;
+  padding-left: 0.2rem;
+  box-sizing: border-box;
+  &::before{
+    position: absolute;
+    left: 0;
+    top: 0;
+    content: '';
+    display: block;
+    width: 2px;
+    height: 100%;
+    background-color: rgba(0,0,0,.1);
+    margin-right: 0.16rem;
   }
 }
  

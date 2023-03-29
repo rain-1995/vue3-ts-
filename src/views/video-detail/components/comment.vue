@@ -25,8 +25,8 @@
           </ul>
         </div>
         <div v-else class="reply-header">
-          <i class="iconfont icon-xitongfanhui" />
-          <span class="title">回复(123)</span>
+          <i class="iconfont icon-xitongfanhui" @click="commentType = 'comment'"/>
+          <span class="title">回复({{currentComment?.showFloorComment?.replyCount || 0}})</span>
         </div>
       </div>
       <div v-if="loading && page == 1" class="loading-status">
@@ -119,6 +119,7 @@ watch(() => props.popShow, (val) => {
   page.value = 1
   loading.value = true
   sortType.value = 1
+  commentType.value = 'comment'
   val && commentList()
 }, { immediate: true })
 
