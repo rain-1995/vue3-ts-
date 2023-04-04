@@ -31,7 +31,7 @@ export default defineComponent({
       default: 0
     },
     dotSize: { // 圆点大小
-      type: [Number, String],
+      type: [Number],
       default: 10
     },
     dotColor: { // 圆点颜色
@@ -39,11 +39,11 @@ export default defineComponent({
       default: '#fff'
     },
     barWidth: { // 进度栏宽度
-      type: [Number, String],
+      type: [Number],
       default: 150
     },
     barHeight: { // 进度栏高度
-      type: [Number, String],
+      type: [Number],
       default: 2
     },
     barColor: { // 进度栏颜色

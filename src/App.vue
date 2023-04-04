@@ -6,7 +6,11 @@
       <TabBar />
     </template>
     <template v-else>
-      <router-view id="view" class="view" style="height:100%;padding-bottom:0;" />
+      <router-view id="view" v-slot="{Component}" class="view" style="height:100%;padding-bottom:0;">
+        <transition>
+          <component :is="Component" />
+        </transition>
+      </router-view>
     </template>
     <AudioPlayer style="display:none;" />
   </div>

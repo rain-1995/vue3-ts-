@@ -2,7 +2,7 @@
   <div class="search-container">
     <div class="header">
       <i class="iconfont icon-xitongfanhui" @click="backPage" />
-      <span class="input-warp">
+      <span v-if="isSearchPage" class="input-warp">
         <i class="iconfont icon-sousuo1" />
         <Field
           v-model="keyWord"
@@ -14,6 +14,13 @@
           @update:model-value="getSuggest"
           @clear="handleClear"
         />
+      </span>
+      <span v-else class="input-warp view-input">
+        <span class="left">
+          <i class="iconfont icon-sousuo1" />
+          <span class="content">{{ keyWord }}</span>
+        </span>
+        <Icon class="clear-icon" name="clear" @click="clearSearch" />
       </span>
       <span class="search" @click="search">搜索</span>
     </div>
@@ -112,11 +119,11 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, onMounted, reactive, nextTick, watch } from 'vue'
+import { ref, computed, reactive, nextTick, watch } from 'vue'
 import { Field, Swipe, SwipeItem } from 'vant'
-import { LocationQueryRaw, LocationQueryValue, useRoute, useRouter } from 'vue-router'
+import { LocationQueryRaw, useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
-import { Tab, Tabs } from 'vant'
+import { Tab, Tabs, Icon } from 'vant'
 import api from '@/api'
 import useState from '@/utils/useState'
 import TabList from './components/tab-detail-list.vue'
@@ -193,6 +200,10 @@ const placeholder = computed(() => {
   return route.query.keyword as string || ''
 })
 
+const isSearchPage = computed(() => {
+  return route.name == 'search'
+})
+
 watch(() => route, async(val) => {
   const { name } = val
   keyWord.value = name == 'search' ? '' : route.query.keyword as string
@@ -208,6 +219,13 @@ watch(() => route, async(val) => {
     getHotTopic()
   }
 }, { deep: true, immediate: true })
+
+function clearSearch() {
+  keyWord.value = ''
+  if (route.name != 'search') {
+    router.back()
+  }
+}
 
 // 处理联想词高亮关键字
 function formatWord(str: string) {
@@ -382,6 +400,27 @@ async function getHotTopic() {
       .van-field__body{
         height: 100%;
       }
+    }
+  }
+  .view-input{
+    overflow: hidden;
+    justify-content: space-between;
+    .left{
+      display: inline-flex;
+      align-items: center;
+      overflow: hidden;
+    }
+    .content{
+      text-align: left;
+      min-width: 0;
+      overflow: hidden;
+      margin-right: 0.2rem;
+      box-sizing: border-box;
+      font-size: 0.28rem;
+    }
+    .clear-icon{
+      color: rgba(0,0,0,.3);
+      font-size: 0.28rem;
     }
   }
   .search{

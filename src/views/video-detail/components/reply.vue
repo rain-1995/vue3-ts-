@@ -25,7 +25,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineComponent, toRefs, ref, reactive, toRef, computed, onMounted, onBeforeMount, nextTick } from 'vue'
+import { ref, onMounted, nextTick, withDefaults, defineProps } from 'vue'
 import CommentItem from './comment-item.vue'
 import { List } from 'vant'
 import api from '@/api'
@@ -56,14 +56,10 @@ const commentTypeMap = {
 }
 
 function loadMore() {
-  // page.value++
   replyList()
 }
 
 async function replyList() {
-  // if (page.value != 1) {
-  //   loading.value = true
-  // }
   const params = {
     id: route.params.id,
     parentCommentId: props.id,
@@ -81,6 +77,8 @@ async function replyList() {
 }
 
 onMounted(() => {
+  reply.value = []
+  replyDetail.value = {}
   replyList()
 })
 </script>

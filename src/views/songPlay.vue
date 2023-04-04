@@ -1,6 +1,9 @@
 <template>
   <div class="play_page">
     <div class="bg_url" :style="{'background-image':`url(${songInfo.al?.picUrl})`}" />
+    <span class="back-icon" @click="back">
+      <i class="iconfont icon-xiangxiajiantou" />
+    </span>
     <div class="song_info">
       <span class="song_name">{{ songInfo.name }}</span>
       <span class="name">{{ songInfo.raps }}</span>
@@ -20,7 +23,7 @@
         <svg-icon icon-class="volume" class="icon" />
         <Progress
           :percent="volumePercent"
-          bar-width="250"
+          :bar-width="250"
           @setVal="setVolume"
         />
       </div>
@@ -43,7 +46,7 @@
         <span class="cur">{{ formatTime(storeState.currentTime.value) }}</span>
         <Progress
           :percent="percent"
-          bar-width="250"
+          :bar-width="250"
           @setVal="setTime"
           @moving="progressMove"
         />
@@ -70,7 +73,6 @@
 </template>
 
 <script lang='ts'>
-import { useRoute } from 'vue-router'
 import { defineComponent, toRefs, ref, reactive, onMounted, nextTick, onUnmounted, watch } from 'vue'
 import api from '@/api'
 import timeUtil from '@/utils/timeUtil'
@@ -78,6 +80,7 @@ import Progress from '@/components/progress.vue'
 import useState from '@/utils/useState'
 import { useStore } from 'vuex'
 import { keysObject } from '@/utils/types'
+import { useRouter, useRoute } from 'vue-router'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const _ = require('lodash')
 export default defineComponent({
@@ -88,6 +91,7 @@ export default defineComponent({
   setup() {
     const route = useRoute()
     const store = useStore()
+    const router = useRouter()
     const lrcRef = ref() // 歌词容器ref
     const coverPage = ref() // 唱片页ref
     const lrcPage = ref() // 歌词页ref
@@ -97,7 +101,7 @@ export default defineComponent({
     // 状态数据
     const state = reactive({
       lrc: [] as object[], // 歌词
-      songInfo: {},
+      songInfo: {} as anyObject,
       currentRow: 0, // 当前播放位置
       percent: <number|string>0, // 歌曲进度条
       moving: false,
@@ -114,6 +118,9 @@ export default defineComponent({
         this.getLyric()
         this.getMusicUrl()
         this.detail()
+      },
+      back() {
+        router.back()
       },
       // 唱片歌词切换
       toggleShow() {
@@ -242,6 +249,17 @@ export default defineComponent({
     height: 100%;
     position: relative;
     z-index: 0;
+    .back-icon{
+      position: absolute;
+      left: 0.3rem;
+      top: 0.4rem;
+      z-index: 100;
+      i{
+        font-size: 0.44rem;
+        font-weight: bold;
+        color: #fff;
+      }
+    }
     .bg_url{
       position: fixed;
       width: 100%;
