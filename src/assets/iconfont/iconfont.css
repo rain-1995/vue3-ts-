@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 3857020 */
-  src: url('iconfont.woff2?t=1678948971732') format('woff2'),
-       url('iconfont.woff?t=1678948971732') format('woff'),
-       url('iconfont.ttf?t=1678948971732') format('truetype');
+  src: url('iconfont.woff2?t=1684481331732') format('woff2'),
+       url('iconfont.woff?t=1684481331732') format('woff'),
+       url('iconfont.ttf?t=1684481331732') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,54 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-tongzhifill:before {
+  content: "\e758";
+}
+
+.icon-icon_notice:before {
+  content: "\e606";
+}
+
+.icon-tongzhi:before {
+  content: "\e61e";
+}
+
+.icon-pinglun:before {
+  content: "\e64b";
+}
+
+.icon-pinglun2:before {
+  content: "\e8c5";
+}
+
+.icon-aite:before {
+  content: "\e60f";
+}
+
+.icon-tongzhi1:before {
+  content: "\e691";
+}
+
+.icon-aite1:before {
+  content: "\e60c";
+}
+
+.icon-remen:before {
+  content: "\e8c9";
+}
+
+.icon-remenhot:before {
+  content: "\e7c7";
+}
+
+.icon-gengduo1:before {
+  content: "\e637";
+}
+
+.icon-gengduo:before {
+  content: "\e7ce";
 }
 
 .icon-zan1:before {

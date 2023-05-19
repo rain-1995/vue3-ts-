@@ -58,7 +58,7 @@
 
 <script lang='ts'>
 import { defineComponent, toRefs, reactive, onMounted, nextTick } from 'vue'
-import { Swipe, SwipeItem, List } from 'vant'
+import { Swipe, SwipeItem, List, Toast } from 'vant'
 import api from '@/api'
 import scrollModel from '@/components/scrollmodel.vue'
 import swiperModel from '@/components/swiperModel.vue'
@@ -99,6 +99,11 @@ export default defineComponent({
       cursor: '',
       loadingList: false
     })
+
+    // 金刚区图标跳转映射
+    const iconJumpUrlMap = {
+      '歌单': '/sheetSquare'
+    }
     // 方法
     const methods = {
       init() {
@@ -110,8 +115,11 @@ export default defineComponent({
       toList({ resourceId }:keysObject) {
         router.push(`/songSheet/${resourceId}`)
       },
-      iconDetail(icon:object) {
-        // router.push('/songPlay/1885112746')
+      iconDetail(icon:anyObject) {
+        if (iconJumpUrlMap[icon.name as keyof typeof iconJumpUrlMap]) {
+          return router.push(iconJumpUrlMap[icon.name as keyof typeof iconJumpUrlMap])
+        }
+        Toast('敬请期待~')
       },
       // 首页模块数据
       async getPageData() {

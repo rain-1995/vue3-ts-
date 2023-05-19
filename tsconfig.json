@@ -15,7 +15,7 @@
       "webpack-env",
       "index"
     ],
-    "typeRoots": ["node_modules/@types", "./src/types"],
+    "typeRoots": ["node_modules/@types", "@/types"],
     "paths": {
       "@/*": [
         "src/*"

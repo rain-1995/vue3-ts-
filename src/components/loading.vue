@@ -49,7 +49,7 @@ const lines = computed(() => {
 
 <style lang="scss" rel="stylesheet/scss" scoped>
 .load-warp{
-  display: flex;
+  display: inline-flex;
   align-items: flex-end;
   position: relative;
   height: 0.4rem;

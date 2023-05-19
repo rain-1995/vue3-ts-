@@ -62,7 +62,7 @@
                 <p class="title">
                   {{ item.title }}
                 </p>
-                <ul class="list">
+                <ul v-if="item?.data?.length" class="list">
                   <li v-for="(i, index) in item.data" :key="index" class="item">
                     <span class="num">{{ i.sort }}</span>
                     <p class="content">
@@ -71,6 +71,9 @@
                     </p>
                   </li>
                 </ul>
+                <div v-else class="no-data">
+                  榜单是空的~
+                </div>
               </div>
             </SwipeItem>
           </Swipe>
@@ -90,7 +93,7 @@
             <Tabs
               v-model:active="curTab"
               background="#f6f8f9"
-              sticky
+              
               animated
               offset-top="1.24rem"
               @change="tabChange"
@@ -106,7 +109,7 @@
                   :data="tabRes" 
                   :cur-tab="curTab" 
                   :loading="loading"
-                  :finished="finished"
+                  :more="more"
                   @load-more="loadMore"
                 />
               </Tab>
@@ -175,7 +178,7 @@ const curTab = ref<number | string>(1) // 选中的tab
 
 const loading = ref(false)
 
-const finished = ref(false)
+const more = ref(true)
 
 const tabRes = ref([] as any[]) // 搜索结果
 
@@ -301,7 +304,7 @@ async function getTabsRes(key: number | string) {
   tabRes.value = tabRes.value.concat(list)
   await nextTick()
   loading.value = false
-  finished.value = list.length < limit.value
+  more.value = list.length >= limit.value
 }
 
 // 加载下一页
@@ -345,7 +348,7 @@ async function getHotTopic() {
     title: string,
     participateCount: number
   }
-  const { hot = [] }: resultType = await api.hotTopic({ limit: 100, offset: 1 })
+  const { hot = [] }: resultType = await api.hotTopic({ limit: 100, offset: 0 })
   let format = hot && hot.filter(item => item.alg == 'TopicQualityScore')
     .map((item, index) => {
       return {
@@ -571,6 +574,12 @@ async function getHotTopic() {
   .van-tab--active{
     font-weight: bold;
   }
+}
+.no-data{
+  font-size: 0.24rem;
+  color: rgba(0,0,0,.5);
+  text-align: center;
+  margin-top: 0.4rem;
 }
 
 </style>

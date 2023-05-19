@@ -39,11 +39,11 @@ export const routes : routeModel[] = [
     }
   },
   {
-    path: '/cloud',
-    name: 'cloud',
-    component: () => import('@/views/cloud.vue'),
+    path: '/community',
+    name: 'community',
+    component: () => import('@/views/community/index.vue'),
     meta: {
-      title: '云村'
+      title: '社区'
     }
   },
   {
@@ -106,6 +106,15 @@ export const routes : routeModel[] = [
     component: () => import('@/views/video-detail/index.vue'),
     meta: {
       title: '视频详情',
+      fullScreen: true
+    }
+  },
+  {
+    path: '/messageIndex',
+    name: 'messageIndex',
+    component: () => import('@/views/message-center/index.vue'),
+    meta: {
+      title: '我的消息',
       fullScreen: true
     }
   }

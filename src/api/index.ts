@@ -10,7 +10,7 @@ export default {
   // 首页数据
   pageData: (data?:object) => http('post', '/homepage/block/page', data),
   // 热门话题
-  hotTopic: (data?:object) => http('post', '/hot/topic', data), // params:limit,offset
+  hotTopic: (data?:object) => http('post', '/hot/topic', data, { resolve: true, message: false }), // params:limit,offset
   // 搜索默认词
   searchDefault: () => http('get', '/search/default'),
   // 歌曲URL
@@ -101,4 +101,20 @@ export default {
   // mvComment: (data:object) => http('post', '/comment/mv', data),
   // 评论点赞
   commentLike: (data:object) => http('post', '/comment/like', data),
+  // 歌单分类
+  sheetCateList: () => http('post', '/playlist/catlist'),
+  // 精品歌单标签
+  highQualitySheetCateList: (data:object) => http('post', '/playlist/highquality/tags', data),
+  // 热门歌单分类
+  hotSheetCateList: () => http('post', '/playlist/hot'),
+  // 分类下的歌单
+  categorySheetDetail: (data: object) => http('post', '/top/playlist', data),
+
+  /**
+   * 通知私信相关
+   */
+  // 私信
+  privateMessage: (data?: object) => http('post', '/msg/private', data),
+  // 私信内容
+  privateHistory: (data?: object) => http('post', '/msg/private/history', data),
 }

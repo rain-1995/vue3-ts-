@@ -50,15 +50,15 @@ export default defineComponent({
         //   icon: 'xinhao',
         //   route: '/podcast'
         // },
+        // {
+        //   name: '关注',
+        //   icon: 'lianxiren',
+        //   route: '/follow'
+        // },
         {
-          name: '关注',
-          icon: 'lianxiren',
-          route: '/follow'
-        },
-        {
-          name: '云村',
+          name: '社区',
           icon: 'yun',
-          route: '/cloud'
+          route: '/community'
         },
         {
           name: '我的',

@@ -15,14 +15,14 @@ http.interceptors.request.use(config => {
 http.interceptors.response.use((res): Promise<void> => {
   const { data } = res
   const code = data.code || data.data?.code
-  console.log(data, 'data')
+  // console.log(data, 'data')
   if (code !== 200) {
     return Promise.reject(data)
   }
   return Promise.resolve(data)
 }, err => {
-  const { data } = err.response
-  Toast(data.msg || data.message)
+  // const { data } = err.response
+  // Toast(data.msg || data.message || '网络开小差了~')
   return Promise.reject(err.response)
 })
 /**
@@ -33,7 +33,7 @@ http.interceptors.response.use((res): Promise<void> => {
  * @param options 配置参数
  * @returns promise
  */
-const request:paramsModel = (method = 'get', url = '', data = {}, options:keysObject = {}):Promise<keysObject> => {
+const request:paramsModel = (method = 'get', url = '', data = {}, options:anyObject = {}):Promise<keysObject> => {
   const dataMap = {
     'post': { data: qs.stringify(data) },
     'get': { params: data }
@@ -52,7 +52,7 @@ const request:paramsModel = (method = 'get', url = '', data = {}, options:keysOb
     .catch((err) => {
       console.log(err, 'reject')
       const { message = true, resolve = false } = options
-      message && Toast(err.msg || err.message)
+      message && Toast(err.msg || err.message || '网络开小差了~')
       if (resolve) {
         return Promise.resolve(err)
       }

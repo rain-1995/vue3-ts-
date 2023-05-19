@@ -1,5 +1,5 @@
 <template>
-  <div class="song_sheet">
+  <div v-if="pageLoaded" class="song_sheet">
     <div
       class="sh_header"
       :class="[detailInfo?.officialPlaylistType?'':'person']"
@@ -24,8 +24,8 @@
           <span v-show="isScroll" class="like_btn"><svg-icon icon-class="jiahao" class="search" /> 收藏</span>
         </div>
         <div class="other">
-          <svg-icon icon-class="search" class="search" />
-          <svg-icon icon-class="gengduo" class="more" />
+          <!-- <svg-icon icon-class="search" class="search" />
+          <svg-icon icon-class="gengduo" class="more" /> -->
         </div>
       </div>
       <!-- 个人歌单 -->
@@ -77,7 +77,7 @@
           {{ formatCount(detailInfo.shareCount) }}
         </span>
       </div>
-      <div class="list">
+      <div v-if="playList.length" class="list">
         <div v-for="(item, index) in playList" :key="index" class="list_item" @click="play(item)">
           <span class="left">
             <span class="num">{{ index+1 }}</span>
@@ -89,13 +89,17 @@
               <span class="sub">{{ item.authors }}-{{ item.al.name }}</span>
             </p>
             <p class="icon">
-              <svg-icon v-if="item.mv !== 0" icon-class="mv_bofang" />
-              <svg-icon icon-class="gengduo" class="more" />
+              <svg-icon v-if="item.mv !== 0" icon-class="mv_bofang" @click.stop="viewMv(item.mv)" />
+              <!-- <svg-icon icon-class="gengduo" class="more" /> -->
             </p>
           </div>
         </div>
       </div>
+      <Loading v-else :base-height="8" text="加载中..." style="margin-top: 50px;" />
     </div>
+  </div>
+  <div v-else class="page-load">
+    <Loading :base-height="8" text="加载中..." />
   </div>
 </template>
 
@@ -106,20 +110,23 @@ import { NoticeBar, Sticky } from 'vant'
 import { keysObject } from '@/utils/types'
 import { useRoute, useRouter } from 'vue-router'
 import util from '@/utils'
+import Loading from '@/components/loading.vue'
 export default defineComponent({
   name: 'SONGSHEET',
   components: {
     NoticeBar,
-    Sticky
+    Sticky,
+    Loading
   },
   setup() {
     const route = useRoute()
     const router = useRouter()
     // 状态数据
     const state = reactive({
-      playList: <object[]>[],
+      playList: <anyObject[]>[],
       detailInfo: <keysObject>{},
-      isScroll: false
+      isScroll: false,
+      pageLoaded: false
     })
 
     // 方法
@@ -128,12 +135,15 @@ export default defineComponent({
         this.detail()
         this.getPlayList()
       },
+      viewMv(id: number) {
+        router.push(`/playVideo/${id}?type=mv`)
+      },
       // 官方标题关键字提取
       formatTitle(title:string):string {
         if (title.indexOf('|') !== -1) {
           return title.split('|').filter((item:string) => item.indexOf('雷达') !== -1).join('')
         } else {
-          return /\[([^\[\]]*)\]/.exec(title)![1]
+          return /\[([^\[\]]*)\]/.exec(title)?.[1] || title
         }
       },
       formatCount(num:number) {
@@ -153,6 +163,7 @@ export default defineComponent({
       async detail() {
         const { playlist }:keysObject = await api.playlistDetail({ id: route.params.id })// 6928102820
         state.detailInfo = playlist
+        state.pageLoaded = true
       },
       handleScroll(e:keysObject) {
         const scrollTop:number = Math.floor(e.target.scrollTop)
@@ -188,6 +199,7 @@ export default defineComponent({
   width: 100%;
   height: 100vh;
   overflow: auto;
+  background-color: #fff;
   .sh_header{
     width:100%;
     padding-top: 1rem;
@@ -452,7 +464,7 @@ export default defineComponent({
           justify-content: space-between;
           width:0;
           .info{
-            font-size: 0.32rem;
+            font-size: 0.28rem;
             font-weight: 500;
             margin-right: 0.2rem;
             box-sizing: border-box;
@@ -477,6 +489,7 @@ export default defineComponent({
             align-items: center;
             color: rgba(0, 0, 0, 0.3);
             font-size: 0.24rem;
+            margin-right: 0.3rem;
             .more{
               margin-left: 0.2rem;
             }
@@ -491,6 +504,13 @@ export default defineComponent({
     top:1rem;
     z-index: 10;
   }
+}
+.page-load{
+  width: 100%;
+  height: 100%;
+  background-color: #fff;
+  padding-top: 4rem;
+
 }
 </style>
 

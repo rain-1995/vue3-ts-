@@ -29,17 +29,18 @@
           </div>
         </div>
         <div class="set">
-          <div v-for="(item, index) in sets" :key="index" class="set_item">
+          <div v-for="(item, index) in sets" :key="index" class="set_item" @click="pageJump(item)">
             <p>
               <svg-icon :icon-class="item.icon" class="icon" />
               <span>{{ item.title }}</span>
             </p>
-            <p>
+            <p class="right">
+              <span v-cloak v-if="item.key == 'message' && newMessageCount > 0" class="count">{{ newMessageCount > 99 ? '99+' : newMessageCount }}</span>
               <svg-icon icon-class="rightjiantou" class="icon" />
             </p>
           </div>
         </div>
-        <div class="logout set" @click="logout">
+        <div class="set logout" @click="logout">
           退出登录
         </div>
       </div>
@@ -48,11 +49,12 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, computed, withDefaults, defineProps, defineEmits, nextTick } from 'vue'
+import { reactive, computed, withDefaults, defineProps, defineEmits, nextTick, watch, ref } from 'vue'
 import { Popup } from 'vant'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import useState from '@/utils/useState'
+import api from '@/api'
 
 interface propType {
     show: boolean
@@ -70,13 +72,41 @@ const router = useRouter()
 const user = useState('user', ['userInfo'])
 
 const sets = reactive([
-  { title: '消息中心', icon: 'duanxin' },
-  { title: '云贝中心', icon: 'yunbei' }
+  { 
+    title: '消息中心',
+    key: 'message',
+    icon: 'duanxin',
+    path: '/messageIndex'
+  }
+  // { 
+  //   title: '云贝中心',
+  //   icon: 'yunbei' 
+  // }
 ])
+
+const newMessageCount = ref(0) // 新消息数
 
 const userInfo = computed(() => user.userInfo.value)
 
 const showFlag = computed(() => props.show)
+
+const isLogin = computed(() => {
+  return user.userInfo.value && Object.keys(user.userInfo.value).length
+})
+
+watch(() => props.show, (val) => {
+  if (val && isLogin.value) {
+    getMessages()
+  }
+})
+
+function pageJump(data: anyObject) {
+  if (isLogin.value) {
+    data.path && router.push(data.path)
+  } else {
+    router.push('/login')
+  }
+}
 
 // 退出登录
 function logout() {
@@ -95,6 +125,11 @@ async function userCenter() {
   await nextTick()
   emit('update:show', false)
 }
+
+async function getMessages() {
+  const result: response = await api.privateMessage()
+  newMessageCount.value = result?.newMsgCount || 0
+}
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
@@ -102,6 +137,8 @@ async function userCenter() {
   width:100%;
   padding:0.4rem 0.36rem 0;
   box-sizing: border-box;
+  position: relative;
+  height: 100%;
   .user{
     display: flex;
     align-items: center;
@@ -188,6 +225,18 @@ async function userCenter() {
           margin-right: 0.12rem;
         }
       }
+      .right{
+        display: inline-flex;
+        align-items: center;
+        .count{
+          font-size: 12px;
+          padding: 4px;
+          border-radius: 50%;
+          background-color: red;
+          color: #fff;
+          margin-right: 4px;
+        }
+      }
     }
   }
   .logout{
@@ -195,6 +244,12 @@ async function userCenter() {
     box-sizing: border-box;
     text-align: center;
     font-weight: bold;
+    position: absolute;
+    bottom: 0.4rem;
+    margin: 0;
+    left: 0.36rem;
+    width: calc(100% - 36px);
+
   }
 }
 </style>

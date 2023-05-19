@@ -9,7 +9,9 @@
           </span>
         </div>
       </div>
-      <span class="button">更多<svg-icon icon-class="rightjiantou" class="icon" /></span>
+      <div class="button" @click="toSheet">
+        <span>更多<i class="iconfont icon-xiangxiajiantou" /></span>
+      </div>
     </div>
     <scroll
       :data="data.creatives"
@@ -55,9 +57,10 @@
 </template>
 
 <script lang='ts'>
-import { defineComponent, toRefs, ref, reactive, toRef, computed, onMounted } from 'vue'
+import { defineComponent, toRefs, reactive, onMounted } from 'vue'
 import { Swipe, SwipeItem } from 'vant'
 import { keysObject } from '@/utils/types'
+import { useRouter } from 'vue-router'
 import util from '@/utils'
 export default defineComponent({
   name: 'SCROLLMODEL',
@@ -75,6 +78,8 @@ export default defineComponent({
       data: props.modeData
     })
 
+    const router = useRouter()
+
     // 方法
     const methods = {
       formatCount(num:number) {
@@ -83,6 +88,9 @@ export default defineComponent({
       // 点击操作，交给父组件处理
       handleClick(data:keysObject) {
         emit('handleClick', data)
+      },
+      toSheet() {
+        router.push('/sheetSquare')
       }
     }
 
@@ -94,7 +102,8 @@ export default defineComponent({
     return {
       ...toRefs(state),
       ...methods,
-      ...computes
+      ...computes,
+      router
     }
   }
 })
@@ -109,6 +118,7 @@ export default defineComponent({
     .title{
       font-size: 0.36rem;
       font-weight: bold;
+      padding-top: .08rem;
       .tab_title{
         color: rgba(0,0,0,.3);
         &::after{
@@ -129,14 +139,22 @@ export default defineComponent({
       }
     }
     .button{
+      height:.44rem;
+      width: 0.96rem;
       font-size: 0.24rem;
       border: 1px solid rgba(0,0,0,.3);
-      padding: 0.08rem 0.12rem;
+      // padding: 0.08rem 0.12rem;
       border-radius: 0.2rem;
       display: flex;
       align-items: center;
-      .icon{
+      text-align: center;
+      // justify-content: space-around;
+      padding-left: 0.14rem;
+      box-sizing: border-box;
+      i{
         font-size: 0.12rem;
+        transform: rotate(-90deg);
+        display: inline-block;
       }
     }
   }
