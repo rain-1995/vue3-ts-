@@ -117,5 +117,14 @@ export const routes : routeModel[] = [
       title: '我的消息',
       fullScreen: true
     }
+  },
+  {
+    path: '/chat/:id',
+    name: 'chat',
+    component: () => import('@/views/private-chat/index.vue'),
+    meta: {
+      title: '私信详情',
+      fullScreen: true
+    }
   }
 ]

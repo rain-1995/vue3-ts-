@@ -89,7 +89,7 @@
         </div>
         <!-- 搜索结果 -->
         <div v-if="route.name == 'searchResult'" class="search-result">
-          <div class="tab-warp">
+          <div class="search-tab-warp">
             <Tabs
               v-model:active="curTab"
               background="#f6f8f9"
@@ -557,7 +557,7 @@ async function getHotTopic() {
 
   }
 }
-:deep(.tab-warp){
+:deep(.search-tab-warp){
   margin-top: 0.2rem;
   .van-tabs__wrap{
     height: auto;

@@ -3,7 +3,8 @@
 const crypto = require('crypto')
 
 module.exports = async (query, request) => {
-  query.cookie.os = 'pc'
+  query.cookie.os = 'ios'
+  query.cookie.appver = '8.7.01'
   const data = {
     username: query.email,
     password:
@@ -11,18 +12,13 @@ module.exports = async (query, request) => {
       crypto.createHash('md5').update(query.password).digest('hex'),
     rememberLogin: 'true',
   }
-  let result = await request(
-    'POST',
-    `https://music.163.com/weapi/login`,
-    data,
-    {
-      crypto: 'weapi',
-      ua: 'pc',
-      cookie: query.cookie,
-      proxy: query.proxy,
-      realIP: query.realIP,
-    },
-  )
+  let result = await request('POST', `https://music.163.com/api/login`, data, {
+    crypto: 'weapi',
+    ua: 'pc',
+    cookie: query.cookie,
+    proxy: query.proxy,
+    realIP: query.realIP,
+  })
   if (result.body.code === 502) {
     return {
       status: 200,

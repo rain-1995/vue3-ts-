@@ -15,8 +15,8 @@
         </li>
       </div>
 
-      <div class="message-list">
-        <li v-for="(item, index) in messageList" :key="index" class="message-item">
+      <div v-if="messageList.length" class="message-list">
+        <li v-for="(item, index) in messageList" :key="index" class="message-item" @click="viewDetail(item)">
           <span class="cover-warp">
             <img :src="item.avatarUrl" alt="">
           </span>
@@ -32,15 +32,17 @@
           </div>
         </li>
       </div>
+      <LoadingAnimate v-else text="加载中..." style="margin-top: 20px;" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { defineComponent, toRefs, ref, reactive, toRef, computed, onMounted } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '@/api'
 import dayjs from 'dayjs'
+import LoadingAnimate from '@/components/loading.vue'
 
 const router = useRouter()
 
@@ -69,8 +71,12 @@ const query = reactive({
   offset: 0
 })
 
+function viewDetail(msg: anyObject) {
+  router.push(`/chat/${msg.fromUserId}`)
+}
+
 async function getMessages() {
-  await api.privateHistory({uid: '1351734819'})
+  await api.privateHistory({ uid: '1351734819' })
   const result: response = await api.privateMessage({ ...query })
   messageList.value = result?.msgs.map((item: anyObject) => {
     const desc = JSON.parse(item.lastMsg)?.msg || ''
@@ -80,7 +86,8 @@ async function getMessages() {
       msgId: item.lastMsgId,
       nickname: item.fromUser.nickname,
       newMessageCount: item.newMsgCount,
-      time: item.lastMsgTime
+      time: item.lastMsgTime,
+      fromUserId: item.fromUser.userId
     }
   })
 }

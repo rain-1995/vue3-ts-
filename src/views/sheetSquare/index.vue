@@ -250,7 +250,7 @@ onMounted(async() => {
 }
 </style>
 <style lang="scss">
-.tab-warp{
+.sheet-tab-warp{
   .van-tab--active{
     font-weight: bold;
   }
