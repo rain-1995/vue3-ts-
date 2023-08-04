@@ -79,4 +79,7 @@ const emit = defineEmits(['on-click'])
     -webkit-line-clamp: 2;
   }
 }
+.sheet:last-child:nth-child(3n - 1){
+  margin-right: calc(30% + 10%/2);
+}
 </style>

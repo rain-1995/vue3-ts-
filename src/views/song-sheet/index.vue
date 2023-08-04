@@ -61,22 +61,25 @@
           <!-- <span class="more">更多</span> -->
         </p>
       </div>
-    </div>
-    <div class="play_list">
-      <div v-cloak class="operate" :style="{opacity:isScroll?0:1}">
+      <div v-cloak class="operate">
         <span class="item">
-          <svg-icon icon-class="add" class="icon" />
-          <span>{{ formatCount(detailInfo.subscribedCount) }}</span>
-        </span>
-        <span class="item border">
-          <svg-icon icon-class="pinglun" class="icon" />
-          {{ formatCount(detailInfo.commentCount) }}
-        </span>
-        <span class="item">
-          <svg-icon icon-class="share" class="icon" />
+          <!-- <svg-icon icon-class="share" class="icon" /> -->
+          <i class="iconfont icon-fenxiang" />
           {{ formatCount(detailInfo.shareCount) }}
         </span>
+        <span class="item border">
+          <i class="iconfont icon-pinglun-tianchong" />
+          <!-- <svg-icon icon-class="pinglun" class="icon" /> -->
+          {{ formatCount(detailInfo.commentCount) }}
+        </span>
+        <span class="item add">
+          <i class="iconfont icon-xinjiantianjiabiaodanyemian" />
+          <!-- <svg-icon icon-class="add" class="icon" /> -->
+          <span>{{ formatCount(detailInfo.subscribedCount) }}</span>
+        </span>
       </div>
+    </div>
+    <div class="play_list">
       <div v-if="playList.length" class="list">
         <div v-for="(item, index) in playList" :key="index" class="list_item" @click="play(item)">
           <span class="left">
@@ -204,7 +207,7 @@ export default defineComponent({
     width:100%;
     padding-top: 1rem;
     box-sizing: border-box;
-    padding-bottom: 1rem;
+    // padding-bottom: 1rem;
     position: relative;
     background-position: 0 0;
     background-repeat: no-repeat;
@@ -390,6 +393,45 @@ export default defineComponent({
         }
       }
     }
+    .operate{
+      // position: absolute;
+      // top:0;
+      // left:50%;
+      // transform: translate(-50%,-50%);
+      // background: #fff;
+      width: 100%;
+      border-radius: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      z-index: 2;
+      padding:.4rem 0.2rem 0.2rem;
+      box-sizing: border-box;
+      // box-shadow: 0 0.04rem 0.24rem 0 rgba(0, 0, 0, 0.4);
+      transition: all .3s;
+      .item{
+        // width: 25%;
+        border-radius: 30px;
+        display: inline-flex;
+        align-items: center;
+        text-align: center;
+        padding: .2rem 0.4rem;
+        font-size: 0.28rem;
+        white-space: nowrap;
+        background-color: rgba(255,255,255,.2);
+        i{
+          margin-right: 0.1rem;
+          font-size: 0.34rem;
+        }
+      }
+      .add{
+        background-color: rgb(255, 63, 63);
+      }
+      .border{
+        border-left:1px solid rgba(0,0,0,.2) ;
+        border-right:1px solid rgba(0,0,0,.2) ;
+      }
+    }
   }
   .person::after{
     display: block;
@@ -409,36 +451,7 @@ export default defineComponent({
     position: relative;
     width: 100%;
     height: auto;
-    .operate{
-      position: absolute;
-      top:0;
-      left:50%;
-      transform: translate(-50%,-50%);
-      background: #fff;
-      border-radius: 1rem;
-      display: flex;
-      align-items: center;
-      z-index: 2;
-      padding: 0.2rem 0.2rem;
-      box-sizing: border-box;
-      box-shadow: 0 0.04rem 0.24rem 0 rgba(0, 0, 0, 0.1);
-      transition: all .3s;
-      .item{
-        display: inline-flex;
-        align-items: center;
-        padding: 0 0.4rem;
-        font-size: 0.28rem;
-        white-space: nowrap;
-        .icon{
-          margin-right: 0.1rem;
-          font-size: 0.24rem;
-        }
-      }
-      .border{
-        border-left:1px solid rgba(0,0,0,.2) ;
-        border-right:1px solid rgba(0,0,0,.2) ;
-      }
-    }
+    
     .list{
       width:100%;
       overflow: auto;

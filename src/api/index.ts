@@ -23,6 +23,8 @@ export default {
   playlistDetail: (data:object) => http('post', '/playlist/detail', data), // params:id
   // 歌单歌曲
   playlistSongs: (data:object) => http('post', '/playlist/track/all', data), // params:id,limit,offset
+  // 歌单评论
+  playlistComments: (data:object) => http('post', '/comment/playlist', data), // params:id,limit,offset
   // 发送验证码
   sendCode: (data:object) => http('post', '/captcha/sent', data), // params:phone
   // 登录

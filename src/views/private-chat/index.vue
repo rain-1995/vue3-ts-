@@ -6,7 +6,13 @@
       <span class="title">消息</span>
     </div>
     <div class="chat-list">
-      
+      <div class="big"></div>
+      <div class="line"></div>
+      <div class="big"></div>
+      <div class="line"></div>
+      <div class="line"></div>
+      <div class="big"></div>
+      <div class="big"></div>
     </div>
   </div>
 </template>
@@ -66,5 +72,6 @@ onMounted(() => {
     margin-left: 0.3rem;
   }
 }
+
 </style>
 

@@ -86,12 +86,12 @@ const sets = reactive([
 
 const newMessageCount = ref(0) // 新消息数
 
-const userInfo = computed(() => user.userInfo.value)
+const userInfo = computed(() => user?.userInfo.value || {})
 
 const showFlag = computed(() => props.show)
 
 const isLogin = computed(() => {
-  return user.userInfo.value && Object.keys(user.userInfo.value).length
+  return userInfo.value && Object.keys(userInfo.value).length
 })
 
 watch(() => props.show, (val) => {

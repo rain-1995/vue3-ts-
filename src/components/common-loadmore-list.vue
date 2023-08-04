@@ -65,11 +65,11 @@ onBeforeUnmount(() => {
   width: 100%;
   padding: 0 0.3rem;
   box-sizing: border-box;
-  &::after{
-    content: '';
-    flex: auto;
-    max-width: 30%;
-  }
+  // &::after{
+  //   content: '';
+  //   flex: auto;
+  //   max-width: 30%;
+  // }
 
 }
 .load-more{
