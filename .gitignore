@@ -2,6 +2,7 @@
 node_modules
 /dist
 node_api/node_modules
+yarn.lock
 
 
 # local env files
