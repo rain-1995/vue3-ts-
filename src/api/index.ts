@@ -118,5 +118,5 @@ export default {
   // 私信
   privateMessage: (data?: object) => http('post', '/msg/private', data),
   // 私信内容
-  privateHistory: (data?: object) => http('post', '/msg/private/history', data),
+  privateHistory: (data?: object) => http('post', '/msg/private/history', data)
 }
