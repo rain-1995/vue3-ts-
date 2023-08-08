@@ -151,9 +151,12 @@ export default defineComponent({
       // justify-content: space-around;
       padding-left: 0.14rem;
       box-sizing: border-box;
+      position: relative;
       i{
-        font-size: 0.12rem;
-        transform: rotate(-90deg);
+        position: absolute;
+        top:50%;
+        font-size: 0.2rem;
+        transform:translate(0,-50%) rotate(-90deg);
         display: inline-block;
       }
     }
