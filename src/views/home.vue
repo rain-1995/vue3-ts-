@@ -1,68 +1,66 @@
 <template>
   <div>
     <refresh :loading="loading" />
-    <van-pull-refresh v-model="pullUp" @refresh="onRefresh">
-      <div class="home">
-        <Swipe class="my-swipe" :lazy-render="true" indicator-color="white" autoplay="5000">
-          <SwipeItem v-for="(item, index) in bannerList" :key="index" @click="bannerDetail(item)">
-            <div class="img_item">
-              <img :src="item.pic" alt="">
-              <span class="type_title" :style="{background:item.titleColor}">{{ item.typeTitle }}</span>
-            </div>
-          </SwipeItem>
-        </Swipe>
-        <!-- 金刚区图标 -->
-        <div class="icon_scroll">
-          <scroll
-            :data="iconList"
-            scroll-dom="icon_wrapper"
-            :scroll-x="true"
-          >
-            <div class="scroll-wrapper icon_wrapper">
-              <div class="scroll-content icon_content">
-                <div v-for="(item, index) in iconList" :key="index" class="icon_item" @click="iconDetail(item)">
-                  <span class="icon">
-                    <img :src="item.iconUrl" alt="">
-                    <span v-if="item.id == -1" class="date">{{ new Date().getDate() }}</span>
-                  </span>
-                  <span class="title">{{ item.name }}</span>
-                </div>
-              </div>
-            </div>
-          </scroll>
-        </div>
-        <List
-          v-model:loading="loadingList"
-          :finished="finished"
-          finished-text="没有更多了"
-          @load="onLoad"
+    <div class="home">
+      <Swipe class="my-swipe" :lazy-render="true" indicator-color="white" autoplay="5000">
+        <SwipeItem v-for="(item, index) in bannerList" :key="index" @click="bannerDetail(item)">
+          <div class="img_item">
+            <img :src="item.pic" alt="">
+            <span class="type_title" :style="{background:item.titleColor}">{{ item.typeTitle }}</span>
+          </div>
+        </SwipeItem>
+      </Swipe>
+      <!-- 金刚区图标 -->
+      <div class="icon_scroll">
+        <scroll
+          :data="iconList"
+          scroll-dom="icon_wrapper"
+          :scroll-x="true"
         >
-          <!-- 主内容 -->
-          <div v-if="mainContent.length > 0" class="content">
-            <div class="content_d">
-              <div v-for="(item, index) in mainContent" :key="index" class="mode">
-                <scroll-model v-if="item.showType == 'HOMEPAGE_SLIDE_PLAYLIST'" :mode-data="item" @handleClick="toList" />
-                <swiper-model v-else :mode-data="item" class="swiper_mode" />
+          <div class="scroll-wrapper icon_wrapper">
+            <div class="scroll-content icon_content">
+              <div v-for="(item, index) in iconList" :key="index" class="icon_item" @click="iconDetail(item)">
+                <span class="icon">
+                  <img :src="item.iconUrl" alt="">
+                  <span v-if="item.id == -1" class="date">{{ new Date().getDate() }}</span>
+                </span>
+                <span class="title">{{ item.name }}</span>
               </div>
             </div>
           </div>
-        </List>
-        <div class="bottom">
-          <div>copyright by rain.weiyu</div>
-        </div>
-        <!-- </list> -->
+        </scroll>
       </div>
-    </van-pull-refresh>
+      <!-- 主内容 -->
+      <template v-if="mainContent.length > 0">
+        <div class="content">
+          <div class="content_d">
+            <div v-for="(item, index) in mainContent" :key="index" class="mode">
+              <scroll-model v-if="item.showType == 'HOMEPAGE_SLIDE_PLAYLIST'" :mode-data="item" @handleClick="toList" />
+              <swiper-model v-else :mode-data="item" class="swiper_mode" />
+            </div>
+          </div>
+        </div>
+      </template>
+      <template v-else>
+        <div class="page-load">
+          <Loading :base-height="8" text="拼命加载中..." />
+        </div>
+      </template>
+      <!-- <div class="bottom">
+        <div>copyright by rain.weiyu</div>
+      </div> -->
+    </div>
   </div>
 </template>
 
 <script lang='ts'>
 import { defineComponent, toRefs, reactive, onMounted, nextTick } from 'vue'
-import { Swipe, SwipeItem, List, Toast } from 'vant'
+import { Swipe, SwipeItem, Toast } from 'vant'
 import api from '@/api'
 import scrollModel from '@/components/scrollmodel.vue'
 import swiperModel from '@/components/swiperModel.vue'
 import refresh from '@/components/refresh.vue'
+import Loading from '@/components/loading.vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { keysObject } from '@/utils/types'
@@ -80,7 +78,7 @@ export default defineComponent({
     scrollModel,
     swiperModel,
     refresh,
-    List
+    Loading
   },
   setup() {
     const router = useRouter()
@@ -109,7 +107,7 @@ export default defineComponent({
       init() {
         this.getBanner()
         this.getIconList()
-        // this.getPageData()
+        this.getPageData()
       },
       // 跳歌单
       toList({ resourceId }:keysObject) {
@@ -125,7 +123,7 @@ export default defineComponent({
       async getPageData() {
         const { data }:any = await api.pageData({ cursor: state.cursor })
         const { blocks, pageConfig } = data
-        state.finished = !data.hasMore
+        // state.finished = data.hasMore
         state.cursor = data.cursor
         nextTick(() => {
           setTimeout(() => {
@@ -205,19 +203,6 @@ export default defineComponent({
       async getIconList() {
         const { data }:any = await api.homeIconList()
         state.iconList = data
-      },
-      onRefresh() {
-        state.mainContent = []
-        state.cursor = ''
-        state.finished = false
-        methods.getPageData()
-      },
-      onLoad() {
-        nextTick(() => {
-          if (!state.finished) {
-            methods.getPageData()
-          }
-        })
       },
       handleScroll(e: Event) {
         const scrollTop = (<myEventTarget>e.target).scrollTop
@@ -394,6 +379,9 @@ export default defineComponent({
     box-sizing: border-box;
     font-size: 0.28rem;
   }
+}
+.page-load{
+  padding: 2rem 0;
 }
 
 </style>
