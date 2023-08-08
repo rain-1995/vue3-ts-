@@ -118,7 +118,7 @@ function isSelected(name: string) {
           margin-right: 0.2rem;
           margin-bottom: 0.3rem;
           border-radius: 0.4rem;
-          font-size: 0.26em;
+          font-size: .26rem;
           width: 1.5rem;
           text-align: center;
           i{
