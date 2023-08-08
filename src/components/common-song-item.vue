@@ -7,7 +7,7 @@
         <span v-if="data?.originSongSimpleData" class="origin">原唱：{{ formatOrigin(data?.originSongSimpleData) }}</span>
       </p>
       <p class="icon">
-        <svg-icon v-if="data.mv !== 0" icon-class="mv_bofang" />
+        <svg-icon v-if="data.mv !== 0" @click.stop="viewMv(data.mv || 0)" icon-class="mv_bofang" />
         <svg-icon icon-class="gengduo" class="more" />
       </p>
     </div>
@@ -41,6 +41,10 @@ const props = withDefaults(defineProps<propsType>(), {
   showAuthor: false,
   data: () => ({})
 })
+
+function viewMv(id: number | string) {
+  router.push(`/playVideo/${id}?type=mv`)
+}
 
 function formatOrigin({ artists = [] }: {artists?: []} = {}) {
   if (artists && artists.length) {
